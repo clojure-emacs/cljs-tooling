@@ -7,9 +7,16 @@ A Clojure library designed to auto-complete clojurescript based on compiler stat
 TODO:
 imports
 
+## Artifacts
+With leiningen:
+
+     [cljs-complete "0.1.0"]
+
+
 ## Usage
 
-=> (completions env "al" 'cljs.core)
+;; env is pulled from cljs compiler state
+=> (completions @cljs.env/*compiler* "al" 'cljs.core)
 ("alength" "alter-meta!")
 
 ## License
