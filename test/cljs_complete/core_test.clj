@@ -26,6 +26,10 @@
         completions (partial cc/completions env)]
     (is (= '("alength" "alter-meta!")
            (completions "al" 'cljs.core)))
+
+    ;; make sure clojure refers work
+    (is (= '("alength" "alter-meta!")
+           (completions "al" 'not-cljs.core)))
     
     (is (= '("dispatch/process-messages")
            (completions "dispatch/p" 'cljs.core.async)))

@@ -29,11 +29,12 @@
            (mapcat collect-aliases)
            (into {})))))
 
-
 (defn ns-vars
   "Returns a list of all potential var name completions for a given namespace"
-  [env ns]
-  (get-in env [NSES (as-sym ns) :defs]))
+  ([env ns] (ns-vars env ns false))
+  ([env ns include-core?]
+     (concat (get-in env [NSES (as-sym ns) :defs])
+             (if include-core? (get-in env [NSES 'cljs.core :defs])))))
 
 (defn public-vars
   [env ns]
@@ -91,14 +92,14 @@
   [env _ ns]
   (map str (concat special-forms
                    (namespaces env ns)
-                   (keys (ns-vars env ns))
+                   (keys (ns-vars env ns true))
                    (ns-classes env ns))))
 
 (defn completions
   "Return a sequence of matching completions given current namespace and a prefix string"
   ([env prefix] (completions env prefix nil))
   ([env prefix ns]
-     (sort (for [completion (potential-completions env prefix ns)
+     (sort (for [completion (distinct (potential-completions env prefix ns))
                  :when (.startsWith completion prefix)]
              completion))))
 
