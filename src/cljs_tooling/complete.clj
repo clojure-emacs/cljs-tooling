@@ -1,4 +1,4 @@
-(ns cljs-complete.core
+(ns cljs-tooling.complete
   "Standalone auto-complete library based on cljs analyzer state")
 
 (defn as-sym [x]

@@ -1,10 +1,10 @@
-(ns cljs-complete.core-test
+(ns cljs-tooling.test-complete
   (:require [clojure.tools.reader.edn :as edn]
             [clojure.java.io :as io]
             [clojure.walk :as walk]
             [clojure.string :as s]
             [clojure.test :refer :all]
-            [cljs-complete.core :as cc]))
+            [cljs-tooling.complete :as cc]))
 
 
 ;;; NS metadata
