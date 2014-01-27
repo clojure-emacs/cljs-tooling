@@ -1,10 +1,10 @@
-(ns cljs-tooling.test-complete
+(ns cljs-tooling.test-info
   (:require [clojure.tools.reader.edn :as edn]
             [clojure.java.io :as io]
             [clojure.walk :as walk]
             [clojure.string :as s]
             [clojure.test :refer :all]
-            [cljs-tooling.complete :as cc]))
+            [cljs-tooling.info :as info]))
 
 ;;; NS metadata
 
@@ -21,7 +21,7 @@
 
 ;; TODO: :imports
 
-(deftest completions-test
+(deftest info-test
   (let [env (test-env)
         completions (partial cc/completions env)]
     (is (= '("alength" "alter-meta!")
