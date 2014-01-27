@@ -19,26 +19,15 @@
   (read-analysis (io/resource "analysis.edn")))
 
 
-;; TODO: :imports
-
 (deftest info-test
   (let [env (test-env)
-        completions (partial cc/completions env)]
-    (is (= '("alength" "alter-meta!")
-           (completions "al" 'cljs.core)))
+        info (partial info/info env)]
 
-    ;; make sure clojure refers work
-    (is (= '("alength" "alter-meta!")
-           (completions "al" 'not-cljs.core)))
-    
-    (is (= '("dispatch/process-messages")
-           (completions "dispatch/p" 'cljs.core.async)))
+    (is (info '+ 'cljs.core ))
 
-    (is (= '("cljs.core/alter-meta!")
-           (completions "cljs.core/alt" 'cljs.core)))
+    (info 'cljs.core)
+    (info 'dispatch/process-messages 'cljs.core.async)
+    (info 'dispatch 'cljs.core.async)
+))
 
-    (is (= '("cljs-app.core" "cljs-app.js-prot" "cljs-app.node-bits" "cljs-app.view" "cljs-app.websockets" "cljs.core" "cljs.core.async" "cljs.core.async.impl.buffers" "cljs.core.async.impl.channels" "cljs.core.async.impl.dispatch" "cljs.core.async.impl.ioc-helpers" "cljs.core.async.impl.protocols" "cljs.core.async.impl.timers" "cljs.reader")
-           (completions "cljs")))
 
-    (is (= '("cljs.core.async" "cljs.core.async.impl.buffers" "cljs.core.async.impl.channels" "cljs.core.async.impl.dispatch" "cljs.core.async.impl.ioc-helpers" "cljs.core.async.impl.protocols" "cljs.core.async.impl.timers")
-           (completions "cljs.core.async")))))
