@@ -33,6 +33,7 @@
            (into {})))))
 
 (defn ns-vars
+  "Vars visible to the ns"
   ([env ns] (ns-vars env ns false))
   ([env ns include-core?]
      (merge (get-in env [NSES (u/as-sym ns) :defs])

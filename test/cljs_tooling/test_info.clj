@@ -4,7 +4,8 @@
             [clojure.walk :as walk]
             [clojure.string :as s]
             [clojure.test :refer :all]
-            [cljs-tooling.info :as info]))
+            [cljs-tooling.info :as info]
+            [cljs-tooling.util.misc :as u]))
 
 ;;; NS metadata
 
@@ -23,11 +24,36 @@
   (let [env (test-env)
         info (partial info/info env)]
 
-    (is (info '+ 'cljs.core ))
+    ;; test resolution from current ns
+    (let [plus (info '+ 'cljs.core )]
+      (is (= (:name plus) (-> #'+ meta :name)))
+      (is (= (:ns plus) 'cljs.core)))
 
-    (info 'cljs.core)
-    (info 'dispatch/process-messages 'cljs.core.async)
-    (info 'dispatch 'cljs.core.async)
-))
+    ;; test resolution from other ns's
+    (let [plus (info '+ 'cljs.core.async)]
+      (is (= (:name plus) (-> #'+ meta :name)))
+      (is (= (:ns plus) 'cljs.core)))
+
+    ;; test ns itself
+    (is (= (-> (info 'cljs.core) keys sort)
+           (sort '(:ns :name :line :file :doc))))
+
+    ;; test var through alias
+    (is (= (info 'dispatch/process-messages 'cljs.core.async)
+           '{:ns cljs.core.async.impl.dispatch,
+             :file "/home/gary/dev/personal/quewww/target/cljsbuild-compiler-0/cljs/core/async/impl/dispatch.cljs"
+             :column 1,
+             :line 13,
+             :name process-messages,
+             :arglists (quote ([]))}))
+
+    ;; test ns alias
+    (is (= (info 'dispatch 'cljs.core.async) 
+           '{:ns cljs.core.async.impl.dispatch
+             :name cljs.core.async.impl.dispatch
+             :line 1
+             :file "/home/gary/dev/personal/quewww/target/cljsbuild-compiler-0/cljs/core/async/impl/dispatch.cljs"
+             :doc nil}))
+    ))
 
 

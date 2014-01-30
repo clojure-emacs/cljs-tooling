@@ -5,12 +5,18 @@
 ;;; TODO
 (defn format-ns
   [ns]
-  (dissoc ns :defs))
+  (-> (select-keys ns [:doc :author])
+      (merge {:file (-> ns :defs first second :file)
+              :line 1
+              :name (:name ns)
+              :ns (:name ns)})))
 
-;;; TODO
 (defn format-var
-  [v]
-  v)
+  "Format it similarly to metadata on a var"
+  [context-ns var]
+  (-> (select-keys var [:arglists :name :line :column :file :doc])
+      (merge {:name (-> var :name name u/as-sym)
+              :ns (-> var :name namespace u/as-sym)})))
 
 (defn info
   "Returns an info map on the symbol in the context of the namespace, resolving aliases.
@@ -22,7 +28,7 @@
    [ns-alias (-> (a/aliased-nses env context-ns)
                  (get sym))] (format-ns (a/find-ns env ns-alias))
 
-   [context-var (get (a/ns-vars env context-ns) sym)] (format-var context-var)
+   [context-var (get (a/ns-vars env context-ns true) sym)] (format-var context-ns context-var)
 
    [scoped-context (-> (a/aliased-nses env context-ns)
                        (get (symbol (namespace sym))))] (info env (symbol (name sym)) scoped-context)))
