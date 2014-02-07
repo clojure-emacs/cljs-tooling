@@ -31,4 +31,4 @@
    [context-var (get (a/ns-vars env context-ns true) sym)] (format-var context-ns context-var)
 
    [scoped-context (-> (a/aliased-nses env context-ns)
-                       (get (symbol (namespace sym))))] (info env (symbol (name sym)) scoped-context)))
+                       (get (u/as-sym (namespace sym))))] (info env (u/as-sym (name sym)) scoped-context)))
