@@ -23,7 +23,6 @@
 (deftest info-test
   (let [env (test-env)
         info (partial info/info env)]
-
     ;; test resolution from current ns
     (let [plus (info '+ 'cljs.core )]
       (is (= (:name plus) (-> #'+ meta :name)))
@@ -54,6 +53,9 @@
              :line 1
              :file "/home/gary/dev/personal/quewww/target/cljsbuild-compiler-0/cljs/core/async/impl/dispatch.cljs"
              :doc nil}))
+
+    (is (= (info 'clojure.string/trim 'cljs.core.async)
+           '{:ns clojure.string, :doc "Removes whitespace from both ends of string.", :file "/home/gary/dev/personal/quewww/target/cljsbuild-compiler-0/clojure/string.cljs", :column 1, :line 132, :name trim, :arglists (quote ([s]))}))
     ))
 
 

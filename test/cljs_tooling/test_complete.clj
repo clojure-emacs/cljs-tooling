@@ -41,4 +41,6 @@
            (completions "cljs")))
 
     (is (= '("cljs.core.async" "cljs.core.async.impl.buffers" "cljs.core.async.impl.channels" "cljs.core.async.impl.dispatch" "cljs.core.async.impl.ioc-helpers" "cljs.core.async.impl.protocols" "cljs.core.async.impl.timers")
-           (completions "cljs.core.async")))))
+           (completions "cljs.core.async")))
+
+    ))

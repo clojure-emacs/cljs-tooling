@@ -21,7 +21,7 @@
   )
 
 (def special-forms
-  (map name '[def if do let quote var fn loop recur throw try monitor-enter monitor-exit dot new set!]))
+  (map name '[def if do let quote var fn loop recur throw try dot new set!]))
 
 (defn scoped-completions
   [env sym context-ns]
