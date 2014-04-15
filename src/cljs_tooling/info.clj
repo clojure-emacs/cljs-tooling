@@ -11,12 +11,20 @@
               :name (:name ns)
               :ns (:name ns)})))
 
+(defn- unquote-1
+  "Handles some weird double-quoting in the analyzer"
+  [[fst & more :as form]]
+  (if (= fst 'quote)
+    (first more)
+    form))
+
 (defn format-var
   "Format it similarly to metadata on a var"
   [context-ns var]
   (-> (select-keys var [:arglists :name :line :column :file :doc])
       (merge {:name (-> var :name name u/as-sym)
-              :ns (-> var :name namespace u/as-sym)})))
+              :ns (-> var :name namespace u/as-sym)})
+      (update-in [:arglists] unquote-1)))
 
 (defn info
   "Returns an info map on the symbol in the context of the namespace, resolving aliases.

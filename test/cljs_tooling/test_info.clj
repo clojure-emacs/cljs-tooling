@@ -19,6 +19,10 @@
   []
   (read-analysis (io/resource "analysis.edn")))
 
+(deftest unquote-test
+  (is (= [1 2 3] (#'info/unquote-1 '(quote [1 2 3]))))
+  (is (= [1 2 3] (#'info/unquote-1 [1 2 3])))
+  (is (= nil (#'info/unquote-1 nil))))
 
 (deftest info-test
   (let [env (test-env)
@@ -44,7 +48,7 @@
              :column 1,
              :line 13,
              :name process-messages,
-             :arglists (quote ([]))}))
+             :arglists ([])}))
 
     ;; test ns alias
     (is (= (info 'dispatch 'cljs.core.async) 
@@ -55,7 +59,7 @@
              :doc nil}))
 
     (is (= (info 'clojure.string/trim 'cljs.core.async)
-           '{:ns clojure.string, :doc "Removes whitespace from both ends of string.", :file "/home/gary/dev/personal/quewww/target/cljsbuild-compiler-0/clojure/string.cljs", :column 1, :line 132, :name trim, :arglists (quote ([s]))}))
+           '{:ns clojure.string, :doc "Removes whitespace from both ends of string.", :file "/home/gary/dev/personal/quewww/target/cljsbuild-compiler-0/clojure/string.cljs", :column 1, :line 132, :name trim, :arglists ([s])}))
     ))
 
 
