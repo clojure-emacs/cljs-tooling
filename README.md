@@ -12,7 +12,7 @@ imports
 
 With leiningen:
 
-     [cljs-complete "0.1.0"]
+     [cljs-tooling "0.1.2"]
 
 ## Usage
 
