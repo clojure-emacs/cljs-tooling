@@ -1,23 +1,26 @@
-# cljs-complete
+# cljs-tooling
 
-[![Continuous Integration status](https://secure.travis-ci.org/gtrak/cljs-complete.png)](http://travis-ci.org/gtrak/cljs-complete)
+[![Continuous Integration status](https://secure.travis-ci.org/gtrak/cljs-tooling.png)](http://travis-ci.org/gtrak/cljs-tooling)
 
-A Clojure library designed to auto-complete clojurescript based on compiler state.  It is a direct port from ninjudd/clojure-complete.
+A Clojure library designed to provide tooling support for ClojureScript.
+Currently it provides var info and auto-completion based on compiler state. The completion is a direct port of ninjudd/clojure-complete.
 
 TODO:
 imports
 
 ## Artifacts
+
 With leiningen:
 
      [cljs-complete "0.1.0"]
 
-
 ## Usage
 
+```clojure
 ;; env is pulled from cljs compiler state
 => (completions @cljs.env/*compiler* "al" 'cljs.core)
 ("alength" "alter-meta!")
+```
 
 ## License
 
