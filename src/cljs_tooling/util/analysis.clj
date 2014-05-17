@@ -32,10 +32,20 @@
            (mapcat collect-aliases)
            (into {})))))
 
+(defn- public?
+  [var]
+  ((complement :private) (val var)))
+
+(defn public-vars
+  "Returns a list of the public vars declared in the ns."
+  [env ns]
+  (let [vars (:defs (find-ns env ns))]
+    (into {} (filter public? vars))))
+
 (defn core-vars
   "Returns a list of cljs.core vars visible to the ns."
   [env ns]
-  (let [vars (:defs (find-ns env 'cljs.core))
+  (let [vars (public-vars env 'cljs.core)
         excludes (:excludes (find-ns env ns))]
     (apply dissoc vars excludes)))
 
@@ -45,9 +55,3 @@
   ([env ns include-core?]
      (merge (:defs (find-ns env ns))
             (if include-core? (core-vars env ns)))))
-
-(defn public-vars
-  [env ns]
-  (let [public? identity] ;; TODO filter public
-    (filter public? (ns-vars env ns))))
-
