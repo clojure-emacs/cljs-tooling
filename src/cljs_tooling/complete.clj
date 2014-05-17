@@ -33,7 +33,7 @@
                         ;; alias
                         (-> (a/aliased-nses env context-ns)
                             (get scope)))]
-    (map #(str scope "/" %) (keys (a/ns-vars env new-context-ns)))))
+    (map #(str scope "/" %) (keys (a/public-vars env new-context-ns)))))
 
 (defn potential-completions
   [env sym context-ns]
