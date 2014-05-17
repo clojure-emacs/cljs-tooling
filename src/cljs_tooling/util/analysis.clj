@@ -32,12 +32,19 @@
            (mapcat collect-aliases)
            (into {})))))
 
+(defn core-vars
+  "Returns a list of cljs.core vars visible to the ns."
+  [env ns]
+  (let [vars (get-in env [NSES 'cljs.core :defs])
+        excludes (get-in env [NSES (u/as-sym ns) :excludes])]
+    (apply dissoc vars excludes)))
+
 (defn ns-vars
   "Vars visible to the ns"
   ([env ns] (ns-vars env ns false))
   ([env ns include-core?]
      (merge (get-in env [NSES (u/as-sym ns) :defs])
-            (if include-core? (get-in env [NSES 'cljs.core :defs])))))
+            (if include-core? (core-vars env ns)))))
 
 (defn public-vars
   [env ns]
