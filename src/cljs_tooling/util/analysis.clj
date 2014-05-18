@@ -5,9 +5,9 @@
 
 (def NSES :cljs.analyzer/namespaces)
 
-(defn get-all-nses
+(defn all-ns
   [env]
-  (keys (NSES env)))
+  (NSES env))
 
 (defn find-ns
   [env ns]

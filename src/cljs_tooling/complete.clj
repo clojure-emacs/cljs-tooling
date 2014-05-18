@@ -12,11 +12,11 @@
   )
 
 (def special-forms
-  (map name '[def if do let quote var fn loop recur throw try dot new set!]))
+  '[def if do let quote var fn loop recur throw try dot new set!])
 
 (defn prefix-completions
   [prefix completions]
-  (map #(str prefix "/" %) completions))
+  (map #(symbol (str prefix "/" %)) completions))
 
 (defn ns-completions
   "Returns a list of public vars in the given namespace."
@@ -38,18 +38,22 @@
     (concat (ns-completions env ns scope)
             (macro-ns-completions ns scope))))
 
+(defn unscoped-completions
+  [env context-ns]
+  (concat special-forms
+          (keys (a/all-ns env))
+          (keys (a/ns-aliases env context-ns))
+          (keys (a/macro-ns-aliases env context-ns))
+          (keys (a/referred-vars env context-ns))
+          (keys (a/referred-macros env context-ns))
+          (keys (a/ns-vars env context-ns true))
+          (ns-classes env context-ns)))
+
 (defn potential-completions
   [env sym context-ns]
   (if (namespace sym)
     (scoped-completions env sym context-ns)
-    (map str (concat special-forms
-                     (a/get-all-nses env)
-                     (keys (a/ns-aliases env context-ns))
-                     (keys (a/macro-ns-aliases env context-ns))
-                     (keys (a/referred-vars env context-ns))
-                     (keys (a/referred-macros env context-ns))
-                     (keys (a/ns-vars env context-ns true))
-                     (ns-classes env context-ns)))))
+    (unscoped-completions env context-ns)))
 
 (defn completions
   "Return a sequence of matching completions given current namespace and a prefix string"
@@ -57,6 +61,7 @@
   ([env prefix context-ns]
      (->> (potential-completions env (u/as-sym prefix) (u/as-sym context-ns))
           distinct
+          (map str)
           (filter #(.startsWith % prefix))
           sort)))
 
