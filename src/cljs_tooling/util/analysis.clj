@@ -13,6 +13,14 @@
   [env ns]
   (get-in env [NSES (u/as-sym ns)]))
 
+(defn find-var
+  "Given a namespace-qualified var name, gets the analyzer metadata for that
+  var."
+  [env sym]
+  (let [sym (u/as-sym sym)
+        ns (find-ns env (namespace sym))]
+    (get (:defs ns) (-> sym name symbol))))
+
 ;; Code adapted from clojure-complete (http://github.com/ninjudd/clojure-complete)
 
 

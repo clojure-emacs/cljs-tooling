@@ -37,6 +37,9 @@
    ;; ns alias
    [ns-alias (-> (a/aliased-nses env context-ns) (get sym))] (format-ns (a/find-ns env ns-alias))
 
+   ;; referred var
+   [var (get (a/referred-vars env context-ns) sym)] (format-var context-ns (a/find-var env var))
+
    ;; var in ns
    [context-var (get (a/ns-vars env context-ns true) sym)] (format-var context-ns context-var)
 
