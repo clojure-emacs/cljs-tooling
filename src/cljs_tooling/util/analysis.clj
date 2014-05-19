@@ -42,17 +42,25 @@
   [env ns]
   (:require-macros (find-ns env ns)))
 
+(defn- expand-refer-map
+  [m]
+  (into {} (for [[k v] m] [k (symbol (str v "/" k))])))
+
 (defn referred-vars
   "Returns a map of [var-name] to [ns-qualified-var-name] for all referred vars
   in the given namespace."
   [env ns]
-  (:uses (find-ns env ns)))
+  (->> (find-ns env ns)
+       :uses
+       expand-refer-map))
 
 (defn referred-macros
   "Returns a map of [macro-name] to [ns-qualified-macro-name] for all referred
   macros in the given namespace."
   [env ns]
-  (:use-macros (find-ns env ns)))
+  (->> (find-ns env ns)
+       :use-macros
+       expand-refer-map))
 
 (defn to-ns
   "If sym is an alias to, or the name of, a namespace referred to in ns, returns
