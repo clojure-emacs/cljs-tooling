@@ -24,22 +24,6 @@
 ;; Code adapted from clojure-complete (http://github.com/ninjudd/clojure-complete)
 
 
-(defn collect-aliases
-  [ns-m]
-  (for [[k v] ns-m
-        :when (not= k v)]
-    [k v]))
-
-(defn aliased-nses
-  "Returns a map of aliases in the namespace"
-  [env ns]
-  (if ns
-    (let [ns-info (find-ns env ns)]
-      (->> (select-keys ns-info [:use-macros :requires :require-macros :uses])
-           vals
-           (mapcat collect-aliases)
-           (into {})))))
-
 (defn ns-aliases
   "Returns a map of [ns-name-or-alias] to [ns-name] for the given namespace."
   [env ns]
