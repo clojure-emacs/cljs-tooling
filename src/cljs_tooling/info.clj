@@ -84,6 +84,9 @@
    ;; var in ns
    [context-var (get (a/ns-vars env context-ns true) sym)] (format-var context-ns context-var)
 
+   ;; macro in cljs.core
+   [macro (get (a/public-macros 'cljs.core) sym)] (format-macro (meta macro))
+
    ;; scoped var
    [var (scoped-var-info env sym context-ns)] (format-var context-ns var)
    
