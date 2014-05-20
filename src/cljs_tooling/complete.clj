@@ -34,7 +34,9 @@
         ns (if (a/find-ns env scope)
              scope
              (a/to-ns env scope context-ns))
-        macro-ns (a/to-macro-ns env scope context-ns)]
+        macro-ns (if (= scope 'cljs.core)
+                   scope
+                   (a/to-macro-ns env scope context-ns))]
     (concat (ns-completions env ns scope)
             (macro-ns-completions macro-ns scope))))
 
