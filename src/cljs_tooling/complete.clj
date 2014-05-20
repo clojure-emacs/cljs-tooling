@@ -36,7 +36,7 @@
              (a/to-ns env scope context-ns))
         macro-ns (a/to-macro-ns env scope context-ns)]
     (concat (ns-completions env ns scope)
-            (macro-ns-completions ns scope))))
+            (macro-ns-completions macro-ns scope))))
 
 (defn unscoped-completions
   [env context-ns]
