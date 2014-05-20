@@ -4,7 +4,10 @@
             [clojure.walk :as walk]
             [clojure.string :as s]
             [clojure.test :refer :all]
-            [cljs-tooling.complete :as cc]))
+            [cljs-tooling.complete :as cc]
+            [cljs.core]
+            [cljs.core.async.macros]
+            [om.core]))
 
 ;;; NS metadata
 
@@ -21,26 +24,91 @@
 
 ;; TODO: :imports
 
-(deftest completions-test
-  (let [env (test-env)
-        completions (partial cc/completions env)]
-    (is (= '("alength" "alter-meta!")
-           (completions "al" 'cljs.core)))
+(def env (test-env))
 
-    ;; make sure clojure refers work
-    (is (= '("alength" "alter-meta!")
-           (completions "al" 'not-cljs.core)))
-    
-    (is (= '("dispatch/process-messages")
-           (completions "dispatch/p" 'cljs.core.async)))
+(def completions (partial cc/completions env))
 
-    (is (= '("cljs.core/alter-meta!")
-           (completions "cljs.core/alt" 'cljs.core)))
+(deftest namespace-completions
+  (testing "Namespace"
+    (is (= '("cljs.core.async.impl.timers")
+           (completions "cljs.core.async.impl.t")
+           (completions "cljs.core.async.impl.t" "om.core")
+           (completions "cljs.core.async.impl.t" "cljs.core.async"))))
 
-    (is (= '("cljs-app.core" "cljs-app.js-prot" "cljs-app.node-bits" "cljs-app.view" "cljs-app.websockets" "cljs.core" "cljs.core.async" "cljs.core.async.impl.buffers" "cljs.core.async.impl.channels" "cljs.core.async.impl.dispatch" "cljs.core.async.impl.ioc-helpers" "cljs.core.async.impl.protocols" "cljs.core.async.impl.timers" "cljs.reader")
-           (completions "cljs")))
+  (testing "Namespace alias"
+    (is (= '()
+           (completions "timers")
+           (completions "timers" "om.core")))
+    (is (= '("timers")
+           (completions "timers" "cljs.core.async")))))
 
-    (is (= '("cljs.core.async" "cljs.core.async.impl.buffers" "cljs.core.async.impl.channels" "cljs.core.async.impl.dispatch" "cljs.core.async.impl.ioc-helpers" "cljs.core.async.impl.protocols" "cljs.core.async.impl.timers")
-           (completions "cljs.core.async")))
+(deftest macro-namespace-completions
+  (testing "Macro namespace"
+    (is (= '()
+           (completions "cljs.core.async.macros")
+           (completions "cljs.core.async.macros" "om.core")))
+    (is (= '("cljs.core.async.macros")
+           (completions "cljs.core.async.macros" "cljs.core.async"))))
 
-    ))
+  ;; TODO: Test case with :require-macros but not :require.
+  (testing "Macro namespace alias"
+    (is (= '()
+           (completions "dom")
+           (completions "dom" "cljs.core.async")))
+    (is (= '("dom")
+           (completions "dom" "om.core")))))
+
+(deftest var-completions
+  (testing "cljs.core var"
+    (is (= '("unchecked-add" "unchecked-add-int")
+           (completions "unchecked-a")
+           (completions "unchecked-a" "cljs.core.async")))
+    (is (= '("cljs.core/unchecked-add" "cljs.core/unchecked-add-int")
+           (completions "cljs.core/unchecked-a")
+           (completions "cljs.core/unchecked-a" "cljs.core.async"))))
+
+  ;; TODO: Excludes test case.
+  #_(testing "Excluded cljs.core var")
+  
+  (testing "Namespace-qualified var"
+    (is (= '("cljs.core.async/sliding-buffer")
+           (completions "cljs.core.async/sli")
+           (completions "cljs.core.async/sli" "om.core")
+           (completions "cljs.core.async/sli" "cljs.core.async"))))
+
+  (testing "Referred var"
+    (is (= '()
+           (completions "sli")
+           (completions "sli" "om.core")))
+    (is (= '("sliding-buffer")
+           (completions "sli" "cljs-app.view"))))
+
+  (testing "Local var"
+    (is (= '("sliding-buffer")
+           (completions "sli" "cljs.core.async")))))
+
+(deftest macro-completions
+  (testing "cljs.core macro"
+    (is (= '("cond" "cond->" "cond->>" "condp")
+           (completions "cond")
+           (completions "cond" "om.core")))
+    (is (= '("cljs.core/cond" "cljs.core/cond->" "cljs.core/cond->>" "cljs.core/condp")
+           (completions "cljs.core/cond")
+           (completions "cljs.core/cond" "om.core"))))
+
+  ;; TODO: Excludes test case.
+  (testing "Excluded cljs.core macro")
+
+  (testing "Namespace-qualified macro"
+    (is (= '()
+           (completions "cljs.core.async.macros/go")
+           (completions "cljs.core.async.macros/go" "om.core")))
+    (is (= '("cljs.core.async.macros/go" "cljs.core.async.macros/go-loop")
+           (completions "cljs.core.async.macros/go" "cljs.core.async"))))
+
+  (testing "Referred macro")
+  (is (= '()
+         (completions "go")
+         (completions "go" "om.core")))
+  (is (= '("go" "go-loop")
+         (completions "go" "cljs.core.async"))))
