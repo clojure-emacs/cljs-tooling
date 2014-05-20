@@ -105,3 +105,10 @@
   ([env ns include-core?]
      (merge (:defs (find-ns env ns))
             (if include-core? (core-vars env ns)))))
+
+(defn core-macros
+  "Returns a list of cljs.core macros visible to the ns."
+  [env ns]
+  (let [macros (public-macros 'cljs.core)
+        excludes (:excludes (find-ns env ns))]
+    (apply dissoc macros excludes)))

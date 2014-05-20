@@ -47,7 +47,7 @@
           (keys (a/referred-vars env context-ns))
           (keys (a/referred-macros env context-ns))
           (keys (a/ns-vars env context-ns true))
-          (keys (a/public-macros 'cljs.core))
+          (keys (a/core-macros env context-ns))
           (ns-classes env context-ns)))
 
 (defn potential-completions
