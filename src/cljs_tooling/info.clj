@@ -52,7 +52,8 @@
 (defn scoped-macro-info
   [env sym & [context-ns]]
   (let [scope (u/as-sym (namespace sym))
-        ns (a/to-macro-ns env scope context-ns)
+        ns (or (a/to-macro-ns env scope context-ns)
+               scope)
         sym (symbol (str ns "/" (name sym)))]
     (if (and ns (find-ns ns))
       (->> (name sym)
@@ -75,7 +76,7 @@
      [ns-alias (a/to-ns env sym context-ns)] (format-ns (a/find-ns env ns-alias))
 
      ;; macro ns
-     [macro-ns (find-ns sym)] (format-macro-ns (ns-name macro-ns))
+     [macro-ns (find-ns sym)] (format-macro-ns sym)
 
      ;; macro ns alias
      [macro-ns-alias (a/to-macro-ns env sym context-ns)] (format-macro-ns macro-ns-alias)
