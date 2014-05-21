@@ -74,8 +74,11 @@
      ;; ns alias
      [ns-alias (a/to-ns env sym context-ns)] (format-ns (a/find-ns env ns-alias))
 
-     ;; macro ns or macro ns alias
-     [macro-ns (a/to-macro-ns env sym context-ns)] (format-macro-ns macro-ns)
+     ;; macro ns
+     [macro-ns (find-ns sym)] (format-macro-ns (ns-name macro-ns))
+
+     ;; macro ns alias
+     [macro-ns-alias (a/to-macro-ns env sym context-ns)] (format-macro-ns macro-ns-alias)
 
      ;; referred var
      [var (get (a/referred-vars env context-ns) sym)] (format-var context-ns (a/find-var env var))
