@@ -7,6 +7,7 @@
             [cljs-tooling.complete :as cc]
             [cljs.core]
             [cljs.core.async.macros]
+            [cljs.core.async.impl.ioc-macros]
             [om.core]))
 
 ;;; NS metadata
@@ -50,13 +51,12 @@
     (is (= '("cljs.core.async.macros")
            (completions "cljs.core.async.macros" "cljs.core.async"))))
 
-  ;; TODO: Test case with :require-macros but not :require.
   (testing "Macro namespace alias"
     (is (= '()
-           (completions "dom")
-           (completions "dom" "cljs.core.async")))
-    (is (= '("dom")
-           (completions "dom" "om.core")))))
+           (completions "ioc")
+           (completions "ioc" "cljs.core.async")))
+    (is (= '("ioc" "ioc-alts!")
+           (completions "io" "cljs.core.async.impl.ioc-helpers")))))
 
 (deftest var-completions
   (testing "cljs.core var"
