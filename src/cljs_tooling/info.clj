@@ -65,30 +65,32 @@
   "Returns an info map on the symbol in the context of the namespace, resolving aliases.
 'sym' can refer to a top-level var, a namespace, or an alias, the context-ns is optional"
   [env sym & [context-ns]]
-  (u/cond-let
-   ;; an NS
-   [ns (a/find-ns env sym)] (format-ns ns)
+  (let [sym (u/as-sym sym)
+        context-ns (u/as-sym context-ns)]
+    (u/cond-let
+     ;; an NS
+     [ns (a/find-ns env sym)] (format-ns ns)
 
-   ;; ns alias
-   [ns-alias (a/to-ns env sym context-ns)] (format-ns (a/find-ns env ns-alias))
+     ;; ns alias
+     [ns-alias (a/to-ns env sym context-ns)] (format-ns (a/find-ns env ns-alias))
 
-   ;; macro ns or macro ns alias
-   [macro-ns (a/to-macro-ns env sym context-ns)] (format-macro-ns macro-ns)
+     ;; macro ns or macro ns alias
+     [macro-ns (a/to-macro-ns env sym context-ns)] (format-macro-ns macro-ns)
 
-   ;; referred var
-   [var (get (a/referred-vars env context-ns) sym)] (format-var context-ns (a/find-var env var))
+     ;; referred var
+     [var (get (a/referred-vars env context-ns) sym)] (format-var context-ns (a/find-var env var))
 
-   ;; referred macro
-   [macro (get (a/referred-macros env context-ns) sym)] (format-macro (-> macro find-var meta))
+     ;; referred macro
+     [macro (get (a/referred-macros env context-ns) sym)] (format-macro (-> macro find-var meta))
 
-   ;; var in ns
-   [context-var (get (a/ns-vars env context-ns true) sym)] (format-var context-ns context-var)
+     ;; var in ns
+     [context-var (get (a/ns-vars env context-ns true) sym)] (format-var context-ns context-var)
 
-   ;; macro in cljs.core
-   [macro (get (a/public-macros 'cljs.core) sym)] (format-macro (meta macro))
+     ;; macro in cljs.core
+     [macro (get (a/public-macros 'cljs.core) sym)] (format-macro (meta macro))
 
-   ;; scoped var
-   [var (scoped-var-info env sym context-ns)] (format-var context-ns var)
-   
-   ;; scoped macro
-   [macro (scoped-macro-info env sym context-ns)] (format-macro macro)))
+     ;; scoped var
+     [var (scoped-var-info env sym context-ns)] (format-var context-ns var)
+     
+     ;; scoped macro
+     [macro (scoped-macro-info env sym context-ns)] (format-macro macro))))
