@@ -1,6 +1,6 @@
 (ns cljs-tooling.util.analysis
   (:require [cljs-tooling.util.misc :as u])
-  (:refer-clojure :exclude [find-ns]))
+  (:refer-clojure :exclude [find-ns find-var all-ns ns-aliases]))
 
 
 (def NSES :cljs.analyzer/namespaces)
