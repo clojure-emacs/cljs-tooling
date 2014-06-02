@@ -22,9 +22,6 @@
   []
   (read-analysis (io/resource "analysis.edn")))
 
-
-;; TODO: :imports
-
 (def env (test-env))
 
 (def completions (partial cc/completions env))
@@ -69,7 +66,7 @@
 
   ;; TODO: Excludes test case.
   #_(testing "Excluded cljs.core var")
-  
+
   (testing "Namespace-qualified var"
     (is (= '("cljs.core.async/sliding-buffer")
            (completions "cljs.core.async/sli")
