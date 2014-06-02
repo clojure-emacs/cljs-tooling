@@ -106,12 +106,12 @@
     (is (= '("cljs.core.async.macros/go" "cljs.core.async.macros/go-loop")
            (completions "cljs.core.async.macros/go" "cljs.core.async"))))
 
-  (testing "Referred macro")
-  (is (= '()
-         (completions "go-")
-         (completions "go-" "om.core")))
-  (is (= '("go-loop")
-         (completions "go-" "cljs.core.async")))
+  (testing "Referred macro"
+    (is (= '()
+           (completions "go-")
+           (completions "go-" "om.core")))
+    (is (= '("go-loop")
+           (completions "go-" "cljs.core.async"))))
 
   (testing "Import"
     (is (= '()
