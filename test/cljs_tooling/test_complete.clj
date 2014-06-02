@@ -108,7 +108,21 @@
 
   (testing "Referred macro")
   (is (= '()
-         (completions "go")
-         (completions "go" "om.core")))
-  (is (= '("go" "go-loop")
-         (completions "go" "cljs.core.async"))))
+         (completions "go-")
+         (completions "go-" "om.core")))
+  (is (= '("go-loop")
+         (completions "go-" "cljs.core.async")))
+
+  (testing "Import"
+    (is (= '()
+           (completions "IdGen")
+           (completions "IdGen" "cljs.core.async")))
+    (is (= '("IdGenerator")
+           (completions "IdGen" "om.core"))))
+
+  (testing "Namespace-qualified import"
+    (is (= '()
+           (completions "goog.ui.IdGen")
+           (completions "goog.ui.IdGen" "cljs.core.async")))
+    (is (= '("goog.ui.IdGenerator")
+           (completions "goog.ui.IdGen" "om.core")))))
