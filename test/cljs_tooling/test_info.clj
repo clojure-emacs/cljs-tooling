@@ -5,23 +5,12 @@
             [clojure.string :as s]
             [clojure.test :refer :all]
             [cljs-tooling.info :as info]
+            [cljs-tooling.test-env :refer [env]]
             [cljs-tooling.util.misc :as u]
             [cljs.core]
             [cljs.core.async.macros]
             [cljs.core.async.impl.ioc-macros]
             [om.core]))
-
-;;; NS metadata
-
-(defn read-analysis
-  "Returns a data structure matching a dump of a compiler's env."
-  [input]
-  (edn/read-string (slurp input)))
-
-(defn test-env
-  ;; TODO: dynamically create this from cljs compiler once dumps are supported
-  []
-  (read-analysis (io/resource "analysis.edn")))
 
 (deftest unquote-test
   (is (= [1 2 3] (#'info/unquote-1 '(quote [1 2 3]))))
@@ -29,8 +18,7 @@
   (is (= nil (#'info/unquote-1 nil))))
 
 (deftest info-test
-  (let [env (test-env)
-        info (partial info/info env)]
+  (let [info (partial info/info env)]
     ;; test resolution from current ns
     (let [plus (info '+ 'cljs.core )]
       (is (= (:name plus) (-> #'+ meta :name)))
@@ -46,24 +34,30 @@
            (sort '(:ns :name :line :file :doc))))
 
     ;; test var through alias
-    (is (= (info 'dispatch/process-messages 'cljs.core.async)
-           '{:ns cljs.core.async.impl.dispatch,
-             :file "/home/gary/dev/personal/quewww/target/cljsbuild-compiler-0/cljs/core/async/impl/dispatch.cljs"
-             :column 1,
-             :line 13,
-             :name process-messages,
-             :arglists ([])}))
+    (let [res (info 'dispatch/process-messages 'cljs.core.async)]
+      (is (= (:ns res) 'cljs.core.async.impl.dispatch))
+      (is (.endsWith (:file res) "cljs/core/async/impl/dispatch.cljs"))
+      (is (= (:column res) 1))
+      (is (= (:line res) 13))
+      (is (= (:name res) 'process-messages))
+      (is (= (:arglists res) '([]))))
 
     ;; test ns alias
-    (is (= (info 'dispatch 'cljs.core.async) 
-           '{:ns cljs.core.async.impl.dispatch
-             :name cljs.core.async.impl.dispatch
-             :line 1
-             :file "/home/gary/dev/personal/quewww/target/cljsbuild-compiler-0/cljs/core/async/impl/dispatch.cljs"
-             :doc nil}))
+    (let [res (info 'dispatch 'cljs.core.async)]
+      (is (= (:ns res) 'cljs.core.async.impl.dispatch))
+      (is (= (:name res) 'cljs.core.async.impl.dispatch))
+      (is (= (:line res) 1))
+      (is (.endsWith (:file res) "cljs/core/async/impl/dispatch.cljs"))
+      (is (nil? (:doc res))))
 
-    (is (= (info 'clojure.string/trim 'cljs.core.async)
-           '{:ns clojure.string, :doc "Removes whitespace from both ends of string.", :file "/home/gary/dev/personal/quewww/target/cljsbuild-compiler-0/clojure/string.cljs", :column 1, :line 132, :name trim, :arglists ([s])}))
+    (let [res (info 'clojure.string/trim 'cljs.core.async)]
+      (is (= (:ns res) 'clojure.string))
+      (is (= (:doc res) "Removes whitespace from both ends of string."))
+      (is (.endsWith (:file res) "clojure/string.clj"))
+      (is (:column res) 1)
+      (is (:line res) 132)
+      (is (:name res) 'trim)
+      (is (:arglists res) '([s])))
 
     ;; test macro ns
     (is (= (info 'cljs.core.async.macros)

@@ -8,7 +8,6 @@
                                   [org.clojure/tools.reader "0.8.0"]
                                   [org.clojure/clojurescript "0.0-2202"]
                                   [org.clojure/core.async "0.1.303.0-886421-alpha"]
-                                  [om "0.6.2"]]
-                   :resource-paths ["test-resources"]}}
+                                  [om "0.6.2"]]}}
   
   )

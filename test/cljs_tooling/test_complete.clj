@@ -5,24 +5,11 @@
             [clojure.string :as s]
             [clojure.test :refer :all]
             [cljs-tooling.complete :as cc]
+            [cljs-tooling.test-env :refer [env]]
             [cljs.core]
             [cljs.core.async.macros]
             [cljs.core.async.impl.ioc-macros]
             [om.core]))
-
-;;; NS metadata
-
-(defn read-analysis
-  "Returns a data structure matching a dump of a compiler's env."
-  [input]
-  (edn/read-string (slurp input)))
-
-(defn test-env
-  ;; TODO: dynamically create this from cljs compiler once dumps are supported
-  []
-  (read-analysis (io/resource "analysis.edn")))
-
-(def env (test-env))
 
 (def completions (partial cc/completions env))
 
@@ -78,7 +65,7 @@
            (completions "sli")
            (completions "sli" "om.core")))
     (is (= '("sliding-buffer")
-           (completions "sli" "cljs-app.view"))))
+           (completions "sli" "cljs-tooling.test-ns"))))
 
   (testing "Local var"
     (is (= '("sliding-buffer")
