@@ -1,15 +1,16 @@
 (ns cljs-tooling.test-env
-  (:require [clojure.test :refer :all]
+  (:require [cemerick.austin :refer [exec-env]]
+            [clojure.test :refer :all]
             [cljs.analyzer :refer [*cljs-ns*]]
             [cljs.env :refer [with-compiler-env]]
             [cljs.repl :refer [-setup analyze-source load-namespace]]))
 
 (defn- create-env []
-  (let [exec-env (cemerick.austin/exec-env)]
-    (with-compiler-env (:cljs.env/compiler exec-env)
+  (let [env (exec-env)]
+    (with-compiler-env (:cljs.env/compiler env)
       (analyze-source "test-resources")
-      (-setup exec-env))
-    exec-env))
+      (-setup env))
+    env))
 
 (defonce env (-> (create-env)
                  :cljs.env/compiler
