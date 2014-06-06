@@ -1,5 +1,6 @@
 (ns cljs-tooling.test-env
-  (:require [cljs.analyzer :refer [*cljs-ns*]]
+  (:require [clojure.test :refer :all]
+            [cljs.analyzer :refer [*cljs-ns*]]
             [cljs.env :refer [with-compiler-env]]
             [cljs.repl :refer [-setup analyze-source load-namespace]]))
 
@@ -14,3 +15,21 @@
                  :cljs.env/compiler
                  deref))
 
+(deftest test-env
+  (testing "Test environment"
+    (is (= '(cljs-tooling.test-ns
+             cljs.core
+             cljs.core.async
+             cljs.core.async.impl.buffers
+             cljs.core.async.impl.channels
+             cljs.core.async.impl.dispatch
+             cljs.core.async.impl.ioc-helpers
+             cljs.core.async.impl.protocols
+             cljs.core.async.impl.timers
+             clojure.browser.event
+             clojure.browser.net
+             clojure.browser.repl
+             clojure.browser.repl.client
+             om.core
+             om.dom)
+           (-> env :cljs.analyzer/namespaces keys sort)))))
