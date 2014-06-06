@@ -3,13 +3,14 @@
             [cljs.env :refer [with-compiler-env]]
             [cljs.repl :refer [-setup analyze-source load-namespace]]))
 
-(def exec-env (cemerick.austin/exec-env))
+(defn- create-env []
+  (let [exec-env (cemerick.austin/exec-env)]
+    (with-compiler-env (:cljs.env/compiler exec-env)
+      (analyze-source "test-resources")
+      (-setup exec-env))
+    exec-env))
 
-(with-compiler-env (:cljs.env/compiler exec-env)
-  (binding [*cljs-ns* 'cljs.user]
-    (analyze-source "test-resources")
-    (-setup exec-env)))
+(defonce env (-> (create-env)
+                 :cljs.env/compiler
+                 deref))
 
-(def env (-> exec-env
-             :cljs.env/compiler
-             deref))
