@@ -58,8 +58,7 @@
   "Returns a map of [import-name] to [ns-qualified-import-name] for all imports
   in the given namespace."
   [env ns]
-  (->> (find-ns env ns)
-       :imports))
+  (:imports (find-ns env ns)))
 
 (defn to-ns
   "If sym is an alias to, or the name of, a namespace referred to in ns, returns
