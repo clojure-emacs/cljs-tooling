@@ -22,9 +22,6 @@
   []
   (read-analysis (io/resource "analysis.edn")))
 
-
-;; TODO: :imports
-
 (def env (test-env))
 
 (def completions (partial cc/completions env))
@@ -69,7 +66,7 @@
 
   ;; TODO: Excludes test case.
   #_(testing "Excluded cljs.core var")
-  
+
   (testing "Namespace-qualified var"
     (is (= '("cljs.core.async/sliding-buffer")
            (completions "cljs.core.async/sli")
@@ -106,9 +103,23 @@
     (is (= '("cljs.core.async.macros/go" "cljs.core.async.macros/go-loop")
            (completions "cljs.core.async.macros/go" "cljs.core.async"))))
 
-  (testing "Referred macro")
-  (is (= '()
-         (completions "go")
-         (completions "go" "om.core")))
-  (is (= '("go" "go-loop")
-         (completions "go" "cljs.core.async"))))
+  (testing "Referred macro"
+    (is (= '()
+           (completions "go-")
+           (completions "go-" "om.core")))
+    (is (= '("go-loop")
+           (completions "go-" "cljs.core.async"))))
+
+  (testing "Import"
+    (is (= '()
+           (completions "IdGen")
+           (completions "IdGen" "cljs.core.async")))
+    (is (= '("IdGenerator")
+           (completions "IdGen" "om.core"))))
+
+  (testing "Namespace-qualified import"
+    (is (= '()
+           (completions "goog.ui.IdGen")
+           (completions "goog.ui.IdGen" "cljs.core.async")))
+    (is (= '("goog.ui.IdGenerator")
+           (completions "goog.ui.IdGen" "om.core")))))

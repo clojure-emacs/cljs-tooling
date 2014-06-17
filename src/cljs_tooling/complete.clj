@@ -50,6 +50,8 @@
           (keys (a/referred-macros env context-ns))
           (keys (a/ns-vars env context-ns true))
           (keys (a/core-macros env context-ns))
+          (keys (a/imports env context-ns))
+          (vals (a/imports env context-ns))
           (ns-classes env context-ns)))
 
 (defn potential-completions
