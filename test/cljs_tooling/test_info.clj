@@ -101,11 +101,11 @@
            (info 'go 'om.core)
            nil))
     (is (= (info 'cljs.core.async.macros/go)
-           (info 'go 'cljs.core.async))
-        '{:ns cljs.core.async.macros
-          :doc "Asynchronously executes the body, returning immediately to the\n  calling thread. Additionally, any visible calls to <!, >! and alt!/alts!\n  channel operations within the body will block (if necessary) by\n  'parking' the calling thread rather than tying up an OS thread (or\n  the only JS thread when in ClojureScript). Upon completion of the\n  operation, the body will be resumed.\n\n  Returns a channel which will receive the result of the body when\n  completed"
-          :file "cljs/core/async/macros.clj"
-          :column 1
-          :line 4
-          :name go
-          :arglists ([& body])})))
+           (info 'go 'cljs.core.async)
+           '{:ns cljs.core.async.macros
+             :doc "Asynchronously executes the body, returning immediately to the\n  calling thread. Additionally, any visible calls to <!, >! and alt!/alts!\n  channel operations within the body will block (if necessary) by\n  'parking' the calling thread rather than tying up an OS thread (or\n  the only JS thread when in ClojureScript). Upon completion of the\n  operation, the body will be resumed.\n\n  Returns a channel which will receive the result of the body when\n  completed"
+             :file "cljs/core/async/macros.clj"
+             :column 1
+             :line 4
+             :name go
+             :arglists ([& body])}))))
