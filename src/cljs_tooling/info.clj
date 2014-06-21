@@ -96,6 +96,6 @@
 
      ;; scoped var
      [var (scoped-var-info env sym context-ns)] (format-var context-ns var)
-     
+
      ;; scoped macro
      [macro (scoped-macro-info env sym context-ns)] (format-macro macro))))
