@@ -31,6 +31,7 @@
              clojure.browser.net
              clojure.browser.repl
              clojure.browser.repl.client
+             clojure.string
              om.core
              om.dom)
            (-> env :cljs.analyzer/namespaces keys sort)))))
