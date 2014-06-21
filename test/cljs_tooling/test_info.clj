@@ -36,29 +36,29 @@
     ;; test var through alias
     (let [res (info 'dispatch/process-messages 'cljs.core.async)]
       (is (= (select-keys res [:ns :column :line :name :arglists])
-             {:ns 'cljs.core.async.impl.dispatch
-              :column 1
-              :line 13
-              :name 'process-messages
-              :arglists '([])}))
+             '{:ns cljs.core.async.impl.dispatch
+               :column 1
+               :line 13
+               :name process-messages
+               :arglists ([])}))
       (is (.endsWith (:file res) "cljs/core/async/impl/dispatch.cljs")))
 
     ;; test fully-qualified var
     (let [res (info 'clojure.string/trim 'cljs-tooling.test-ns)]
       (is (= (select-keys res [:ns :column :line :name :arglists :doc])
-             {:ns 'clojure.string
-              :column 1
-              :line 132
-              :name 'trim
-              :arglists '([s])
-              :doc "Removes whitespace from both ends of string."})))
+             '{:ns clojure.string
+               :column 1
+               :line 132
+               :name trim
+               :arglists ([s])
+               :doc "Removes whitespace from both ends of string."})))
 
     ;; test ns alias
     (let [res (info 'dispatch 'cljs.core.async)]
       (is (= (select-keys res [:ns :line :name])
-             {:ns 'cljs.core.async.impl.dispatch
-              :name 'cljs.core.async.impl.dispatch
-              :line 1}))
+             '{:ns cljs.core.async.impl.dispatch
+               :name cljs.core.async.impl.dispatch
+               :line 1}))
       (is (.endsWith (:file res) "cljs/core/async/impl/dispatch.cljs")))
 
     ;; test macro ns
