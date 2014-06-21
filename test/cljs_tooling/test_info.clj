@@ -51,16 +51,6 @@
               :line 1}))
       (is (.endsWith (:file res) "cljs/core/async/impl/dispatch.cljs")))
 
-    (let [res (info 'clojure.string/trim 'cljs.core.async)]
-      (is (= res
-             {:ns 'clojure.string
-              :doc "Removes whitespace from both ends of string."
-              :file "clojure/string.clj"
-              :column 1
-              :line 232
-              :name 'trim
-              :arglists '([s])})))
-
     ;; test macro ns
     (is (= (info 'cljs.core.async.macros)
            (info 'cljs.core.async.macros 'cljs.core.async)
