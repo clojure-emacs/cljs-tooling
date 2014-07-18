@@ -5,11 +5,11 @@
 ;;; TODO
 (defn format-ns
   [ns]
-  (-> (select-keys ns [:doc :author])
-      (merge {:file (-> ns :defs first second :file)
-              :line 1
-              :name (:name ns)
-              :ns (:name ns)})))
+  (merge (select-keys ns [:doc :author])
+         {:file (-> ns :defs first second :file)
+          :line 1
+          :name (:name ns)
+          :ns (:name ns)}))
 
 (defn format-macro-ns
   [ns]
@@ -38,8 +38,8 @@
 
 (defn format-macro
   [macro]
-  (-> (select-keys macro [:arglists :name :line :column :file :doc])
-      (merge {:ns (-> macro :ns ns-name)})))
+  (merge (select-keys macro [:arglists :name :line :column :file :doc])
+         {:ns (-> macro :ns ns-name)}))
 
 (defn scoped-var-info
   [env sym & [context-ns]]
