@@ -52,9 +52,8 @@
 (defn scoped-macro-info
   [env sym & [context-ns]]
   (let [scope (u/as-sym (namespace sym))
-        ns (cond (= scope 'cljs.core) scope
-                 context-ns (a/to-macro-ns env scope context-ns)
-                 :else scope)
+        ns (or (a/to-macro-ns env scope context-ns)
+               scope)
         sym (symbol (str ns "/" (name sym)))]
     (if (and ns (find-ns ns))
       (->> (name sym)
