@@ -12,9 +12,7 @@
       (-setup env))
     env))
 
-(def env (-> (create-env)
-             :cljs.env/compiler
-             deref))
+(def env @(:cljs.env/compiler (create-env)))
 
 (deftest test-env
   (testing "Test environment"
@@ -34,4 +32,4 @@
              clojure.string
              om.core
              om.dom)
-           (-> env :cljs.analyzer/namespaces keys sort)))))
+           (sort (keys (:cljs.analyzer/namespaces env)))))))
