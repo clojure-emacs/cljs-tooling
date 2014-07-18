@@ -7,7 +7,6 @@
   :profiles {:dev {:dependencies [[org.clojure/clojure "1.5.1"]
                                   [org.clojure/tools.reader "0.8.0"]
                                   [org.clojure/clojurescript "0.0-2202"]
+                                  [com.cemerick/austin "0.1.4"]
                                   [org.clojure/core.async "0.1.303.0-886421-alpha"]
-                                  [om "0.6.2"]]}}
-  
-  )
+                                  [om "0.6.2"]]}})
