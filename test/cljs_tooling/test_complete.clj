@@ -83,8 +83,11 @@
            (completions "cljs.core/cond")
            (completions "cljs.core/cond" "om.core"))))
 
-  ;; TODO: Excludes test case.
-  (testing "Excluded cljs.core macro")
+  (testing "Excluded cljs.core macro"
+    (is (= '()
+           (completions "whil" "cljs-tooling.test-ns")))
+    (is (= '("cljs.core/while")
+           (completions "cljs.core/whil" "cljs-tooling.test-ns"))))
 
   (testing "Namespace-qualified macro"
     (is (= '()
