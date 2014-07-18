@@ -51,8 +51,11 @@
            (completions "cljs.core/unchecked-a")
            (completions "cljs.core/unchecked-a" "cljs.core.async"))))
 
-  ;; TODO: Excludes test case.
-  #_(testing "Excluded cljs.core var")
+  (testing "Excluded cljs.core var"
+    (is (= '()
+           (completions "unchecked-b" "cljs-tooling.test-ns")))
+    (is (= '("cljs.core/unchecked-byte")
+           (completions "cljs.core/unchecked-b" "cljs-tooling.test-ns"))))
 
   (testing "Namespace-qualified var"
     (is (= '("cljs.core.async/sliding-buffer")
