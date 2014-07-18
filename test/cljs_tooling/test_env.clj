@@ -12,9 +12,9 @@
       (-setup env))
     env))
 
-(defonce env (-> (create-env)
-                 :cljs.env/compiler
-                 deref))
+(def env (-> (create-env)
+             :cljs.env/compiler
+             deref))
 
 (deftest test-env
   (testing "Test environment"
