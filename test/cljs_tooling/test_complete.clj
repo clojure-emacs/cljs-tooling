@@ -5,13 +5,17 @@
             [clojure.string :as s]
             [clojure.test :refer :all]
             [cljs-tooling.complete :as cc]
-            [cljs-tooling.test-env :refer [env]]
+            [cljs-tooling.test-env :as test-env]
             [cljs.core]
             [cljs.core.async.macros]
             [cljs.core.async.impl.ioc-macros]
             [om.core]))
 
-(def completions (partial cc/completions env))
+(use-fixtures :once test-env/wrap-test-env)
+
+(defn completions
+  [& args]
+  (apply cc/completions test-env/*env* args))
 
 (deftest namespace-completions
   (testing "Namespace"
