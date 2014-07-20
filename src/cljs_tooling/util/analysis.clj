@@ -64,15 +64,13 @@
   "If sym is an alias to, or the name of, a namespace referred to in ns, returns
   the name of the namespace; else returns nil."
   [env sym ns]
-  (-> (ns-aliases env ns)
-      (get (u/as-sym sym))))
+  (get (ns-aliases env ns) (u/as-sym sym)))
 
 (defn to-macro-ns
   "If sym is an alias to, or the name of, a macro namespace referred to in ns,
   returns the name of the macro namespace; else returns nil."
   [env sym ns]
-  (-> (macro-ns-aliases env ns)
-      (get (u/as-sym sym))))
+  (get (macro-ns-aliases env ns) (u/as-sym sym)))
 
 (defn- public?
   [var]

@@ -5,26 +5,17 @@
             [clojure.string :as s]
             [clojure.test :refer :all]
             [cljs-tooling.complete :as cc]
+            [cljs-tooling.test-env :as test-env]
             [cljs.core]
             [cljs.core.async.macros]
             [cljs.core.async.impl.ioc-macros]
             [om.core]))
 
-;;; NS metadata
+(use-fixtures :once test-env/wrap-test-env)
 
-(defn read-analysis
-  "Returns a data structure matching a dump of a compiler's env."
-  [input]
-  (edn/read-string (slurp input)))
-
-(defn test-env
-  ;; TODO: dynamically create this from cljs compiler once dumps are supported
-  []
-  (read-analysis (io/resource "analysis.edn")))
-
-(def env (test-env))
-
-(def completions (partial cc/completions env))
+(defn completions
+  [& args]
+  (apply cc/completions test-env/*env* args))
 
 (deftest namespace-completions
   (testing "Namespace"
@@ -64,8 +55,11 @@
            (completions "cljs.core/unchecked-a")
            (completions "cljs.core/unchecked-a" "cljs.core.async"))))
 
-  ;; TODO: Excludes test case.
-  #_(testing "Excluded cljs.core var")
+  (testing "Excluded cljs.core var"
+    (is (= '()
+           (completions "unchecked-b" "cljs-tooling.test-ns")))
+    (is (= '("cljs.core/unchecked-byte")
+           (completions "cljs.core/unchecked-b" "cljs-tooling.test-ns"))))
 
   (testing "Namespace-qualified var"
     (is (= '("cljs.core.async/sliding-buffer")
@@ -78,7 +72,7 @@
            (completions "sli")
            (completions "sli" "om.core")))
     (is (= '("sliding-buffer")
-           (completions "sli" "cljs-app.view"))))
+           (completions "sli" "cljs-tooling.test-ns"))))
 
   (testing "Local var"
     (is (= '("sliding-buffer")
@@ -93,8 +87,11 @@
            (completions "cljs.core/cond")
            (completions "cljs.core/cond" "om.core"))))
 
-  ;; TODO: Excludes test case.
-  (testing "Excluded cljs.core macro")
+  (testing "Excluded cljs.core macro"
+    (is (= '()
+           (completions "whil" "cljs-tooling.test-ns")))
+    (is (= '("cljs.core/while")
+           (completions "cljs.core/whil" "cljs-tooling.test-ns"))))
 
   (testing "Namespace-qualified macro"
     (is (= '()
