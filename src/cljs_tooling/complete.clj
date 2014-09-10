@@ -12,7 +12,8 @@
   )
 
 (def special-forms
-  '[def if do let quote var fn loop recur throw try dot new set!])
+  '#{& . case* catch def defrecord* deftype* do finally fn* if js* let*
+     letfn* loop* new ns quote recur set! throw try})
 
 (defn prefix-completions
   [prefix completions]
