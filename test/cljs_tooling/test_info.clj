@@ -24,93 +24,93 @@
   (is (= nil (#'info/unquote-1 nil))))
 
 (deftest info-test
-  ;; test resolution from current ns
-  (let [plus (info '+ 'cljs.core )]
-    (is (= (:name plus) (-> #'+ meta :name)))
-    (is (= (:ns plus) 'cljs.core)))
+  (testing "Resolution from current namespace"
+    (let [plus (info '+ 'cljs.core )]
+      (is (= (:name plus) (-> #'+ meta :name)))
+      (is (= (:ns plus) 'cljs.core))))
 
-  ;; test resolution from other ns's
-  (let [plus (info '+ 'cljs.core.async)]
-    (is (= (:name plus) (-> #'+ meta :name)))
-    (is (= (:ns plus) 'cljs.core)))
+  (testing "Resolution from other namespaces"
+    (let [plus (info '+ 'cljs.core.async)]
+      (is (= (:name plus) (-> #'+ meta :name)))
+      (is (= (:ns plus) 'cljs.core))))
 
-  ;; test ns itself
-  (is (= (-> (info 'cljs.core) keys sort)
-         (sort '(:ns :name :line :file :doc))))
+  (testing "Namespace itself"
+    (is (= (-> (info 'cljs.core) keys sort)
+           (sort '(:ns :name :line :file :doc)))))
 
-  ;; test var through alias
-  (let [res (info 'dispatch/process-messages 'cljs.core.async)]
-    (is (= (select-keys res [:ns :column :line :name :arglists])
-           '{:ns cljs.core.async.impl.dispatch
+  (testing "Aliased var"
+    (let [res (info 'dispatch/process-messages 'cljs.core.async)]
+      (is (= (select-keys res [:ns :column :line :name :arglists])
+             '{:ns cljs.core.async.impl.dispatch
+               :column 1
+               :line 13
+               :name process-messages
+               :arglists ([])}))
+      (is (.endsWith (:file res) "cljs/core/async/impl/dispatch.cljs"))))
+
+  (testing "Fully-qualified var"
+    (let [res (info 'clojure.string/trim 'cljs-tooling.test-ns)]
+      (is (= (select-keys res [:ns :column :line :name :arglists :doc])
+             '{:ns clojure.string
+               :column 1
+               :line 147
+               :name trim
+               :arglists ([s])
+               :doc "Removes whitespace from both ends of string."}))))
+
+  (testing "Namespace alias"
+    (let [res (info 'dispatch 'cljs.core.async)]
+      (is (= (select-keys res [:ns :line :name])
+             '{:ns cljs.core.async.impl.dispatch
+               :name cljs.core.async.impl.dispatch
+               :line 1}))
+      (is (.endsWith (:file res) "cljs/core/async/impl/dispatch.cljs"))))
+
+  (testing "Macro namespace"
+    (is (= (info 'cljs.core.async.macros)
+           (info 'cljs.core.async.macros 'cljs.core.async)
+           '{:author nil
+             :ns cljs.core.async.macros
+             :doc nil
+             :file "cljs/core/async/macros.clj"
+             :line 1
+             :name cljs.core.async.macros})))
+
+  (testing "Macro namespace alias"
+    (is (= (info 'ioc)
+           (info 'ioc 'om.core)
+           nil))
+    (is (= (info 'ioc 'cljs.core.async.impl.ioc-helpers)
+           '{:author nil
+             :doc nil
+             :file "cljs/core/async/impl/ioc_macros.clj"
+             :line 1
+             :name cljs.core.async.impl.ioc-macros
+             :ns cljs.core.async.impl.ioc-macros})))
+
+  (testing "cljs.core macro"
+    (is (= (info 'loop)
+           (info 'cljs.core/loop)
+           (info 'loop 'cljs.core.async)
+           (info 'cljs.core/loop 'cljs.core.async)
+           '{:ns cljs.core
+             :doc "Evaluates the exprs in a lexical context in which the symbols in\n  the binding-forms are bound to their respective init-exprs or parts\n  therein. Acts as a recur target."
+             :file "cljs/core.clj"
              :column 1
-             :line 13
-             :name process-messages
-             :arglists ([])}))
-    (is (.endsWith (:file res) "cljs/core/async/impl/dispatch.cljs")))
+             :line 159
+             :name loop
+             :arglists ([bindings & body])})))
 
-  ;; test fully-qualified var
-  (let [res (info 'clojure.string/trim 'cljs-tooling.test-ns)]
-    (is (= (select-keys res [:ns :column :line :name :arglists :doc])
-           '{:ns clojure.string
+  (testing "Macro"
+    (is (= (info 'go)
+           (info 'go 'om.core)
+           nil))
+    (is (= (info 'cljs.core.async.macros/go)
+           (info 'go 'cljs.core.async)
+           '{:ns cljs.core.async.macros
+             :doc "Asynchronously executes the body, returning immediately to the\n  calling thread. Additionally, any visible calls to <!, >! and alt!/alts!\n  channel operations within the body will block (if necessary) by\n  'parking' the calling thread rather than tying up an OS thread (or\n  the only JS thread when in ClojureScript). Upon completion of the\n  operation, the body will be resumed.\n\n  Returns a channel which will receive the result of the body when\n  completed"
+             :file "cljs/core/async/macros.clj"
              :column 1
-             :line 147
-             :name trim
-             :arglists ([s])
-             :doc "Removes whitespace from both ends of string."})))
-
-  ;; test ns alias
-  (let [res (info 'dispatch 'cljs.core.async)]
-    (is (= (select-keys res [:ns :line :name])
-           '{:ns cljs.core.async.impl.dispatch
-             :name cljs.core.async.impl.dispatch
-             :line 1}))
-    (is (.endsWith (:file res) "cljs/core/async/impl/dispatch.cljs")))
-
-  ;; test macro ns
-  (is (= (info 'cljs.core.async.macros)
-         (info 'cljs.core.async.macros 'cljs.core.async)
-         '{:author nil
-           :ns cljs.core.async.macros
-           :doc nil
-           :file "cljs/core/async/macros.clj"
-           :line 1
-           :name cljs.core.async.macros}))
-
-  ;; test macro ns alias
-  (is (= (info 'ioc)
-         (info 'ioc 'om.core)
-         nil))
-  (is (= (info 'ioc 'cljs.core.async.impl.ioc-helpers)
-         '{:author nil
-           :doc nil
-           :file "cljs/core/async/impl/ioc_macros.clj"
-           :line 1
-           :name cljs.core.async.impl.ioc-macros
-           :ns cljs.core.async.impl.ioc-macros}))
-
-  ;; test cljs.core macro
-  (is (= (info 'loop)
-         (info 'cljs.core/loop)
-         (info 'loop 'cljs.core.async)
-         (info 'cljs.core/loop 'cljs.core.async)
-         '{:ns cljs.core
-           :doc "Evaluates the exprs in a lexical context in which the symbols in\n  the binding-forms are bound to their respective init-exprs or parts\n  therein. Acts as a recur target."
-           :file "cljs/core.clj"
-           :column 1
-           :line 159
-           :name loop
-           :arglists ([bindings & body])}))
-
-  ;; test macro
-  (is (= (info 'go)
-         (info 'go 'om.core)
-         nil))
-  (is (= (info 'cljs.core.async.macros/go)
-         (info 'go 'cljs.core.async)
-         '{:ns cljs.core.async.macros
-           :doc "Asynchronously executes the body, returning immediately to the\n  calling thread. Additionally, any visible calls to <!, >! and alt!/alts!\n  channel operations within the body will block (if necessary) by\n  'parking' the calling thread rather than tying up an OS thread (or\n  the only JS thread when in ClojureScript). Upon completion of the\n  operation, the body will be resumed.\n\n  Returns a channel which will receive the result of the body when\n  completed"
-           :file "cljs/core/async/macros.clj"
-           :column 1
-           :line 4
-           :name go
-           :arglists ([& body])})))
+             :line 4
+             :name go
+             :arglists ([& body])}))))
