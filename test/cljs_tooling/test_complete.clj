@@ -77,7 +77,14 @@
 
   (testing "Local var"
     (is (= '("sliding-buffer")
-           (completions "sli" "cljs.core.async")))))
+           (completions "sli" "cljs.core.async"))))
+
+  (testing "Private vars"
+    (is (= '()
+           (completions "cljs.core.async/fhno")
+           (completions "cljs.core.async/fhno" "om.core")))
+    (is (= '("fhnop")
+           (completions "fhno" "cljs.core.async"))))
 
   (testing "Anonymous vars are not returned"
     (is (= '()
