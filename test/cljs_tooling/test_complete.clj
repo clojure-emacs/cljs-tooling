@@ -79,6 +79,11 @@
     (is (= '("sliding-buffer")
            (completions "sli" "cljs.core.async")))))
 
+  (testing "Anonymous vars are not returned"
+    (is (= '()
+           (completions "cljs.core.async/->t")
+           (completions "->t" "cljs.core.async")))))
+
 (deftest macro-completions
   (testing "cljs.core macro"
     (is (= '("cond" "cond->" "cond->>" "condp")
