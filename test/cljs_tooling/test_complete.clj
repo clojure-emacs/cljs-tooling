@@ -41,10 +41,11 @@
 
   (testing "Macro namespace alias"
     (is (= '()
-           (completions "ioc")
-           (completions "ioc" "cljs.core.async")))
+           (completions "ioc")))
+    (is (= '("ioc")
+           (completions "io" "cljs.core.async.impl.ioc-helpers")))
     (is (= '("ioc" "ioc-alts!")
-           (completions "io" "cljs.core.async.impl.ioc-helpers")))))
+           (completions "ioc" "cljs.core.async")))))
 
 (deftest var-completions
   (testing "cljs.core var"

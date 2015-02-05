@@ -53,7 +53,7 @@
     (is (= (select-keys res [:ns :column :line :name :arglists :doc])
            '{:ns clojure.string
              :column 1
-             :line 132
+             :line 147
              :name trim
              :arglists ([s])
              :doc "Removes whitespace from both ends of string."})))
@@ -78,7 +78,7 @@
 
   ;; test macro ns alias
   (is (= (info 'ioc)
-         (info 'ioc 'cljs.core.async)
+         (info 'ioc 'om.core)
          nil))
   (is (= (info 'ioc 'cljs.core.async.impl.ioc-helpers)
          '{:author nil
@@ -97,7 +97,7 @@
            :doc "Evaluates the exprs in a lexical context in which the symbols in\n  the binding-forms are bound to their respective init-exprs or parts\n  therein. Acts as a recur target."
            :file "cljs/core.clj"
            :column 1
-           :line 154
+           :line 159
            :name loop
            :arglists ([bindings & body])}))
 
