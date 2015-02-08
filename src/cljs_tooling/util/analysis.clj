@@ -76,11 +76,15 @@
   [var]
   ((complement :private) (val var)))
 
+(defn- named?
+  [var]
+  ((complement :anonymous) (val var)))
+
 (defn public-vars
   "Returns a list of the public vars declared in the ns."
   [env ns]
   (let [vars (:defs (find-ns env ns))]
-    (into {} (filter public? vars))))
+    (into {} (filter (every-pred public? named?) vars))))
 
 (defn- macro?
   [var]
@@ -107,8 +111,11 @@
   "Vars visible to the ns"
   ([env ns] (ns-vars env ns false))
   ([env ns include-core?]
-     (merge (:defs (find-ns env ns))
-            (if include-core? (core-vars env ns)))))
+   (merge (->> (find-ns env ns)
+               :defs
+               (filter named?)
+               (into {}))
+          (if include-core? (core-vars env ns)))))
 
 (defn core-macros
   "Returns a list of cljs.core macros visible to the ns."

@@ -41,10 +41,11 @@
 
   (testing "Macro namespace alias"
     (is (= '()
-           (completions "ioc")
-           (completions "ioc" "cljs.core.async")))
+           (completions "ioc")))
+    (is (= '("ioc")
+           (completions "io" "cljs.core.async.impl.ioc-helpers")))
     (is (= '("ioc" "ioc-alts!")
-           (completions "io" "cljs.core.async.impl.ioc-helpers")))))
+           (completions "ioc" "cljs.core.async")))))
 
 (deftest var-completions
   (testing "cljs.core var"
@@ -76,7 +77,19 @@
 
   (testing "Local var"
     (is (= '("sliding-buffer")
-           (completions "sli" "cljs.core.async")))))
+           (completions "sli" "cljs.core.async"))))
+
+  (testing "Private vars"
+    (is (= '()
+           (completions "cljs.core.async/fhno")
+           (completions "cljs.core.async/fhno" "om.core")))
+    (is (= '("fhnop")
+           (completions "fhno" "cljs.core.async"))))
+
+  (testing "Anonymous vars are not returned"
+    (is (= '()
+           (completions "cljs.core.async/->t")
+           (completions "->t" "cljs.core.async")))))
 
 (deftest macro-completions
   (testing "cljs.core macro"
