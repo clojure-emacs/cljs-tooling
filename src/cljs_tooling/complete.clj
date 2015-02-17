@@ -3,14 +3,6 @@
   (:require [cljs-tooling.util.analysis :as a]
             [cljs-tooling.util.misc :as u]))
 
-;;; TODO
-(defn ns-classes
-  "Returns a list of potential class name completions for a given namespace"
-  [env ns]
-
-  ;;(map name (keys (ns-imports ns)))
-  )
-
 (def special-forms
   '#{& . case* catch def defrecord* deftype* do finally fn* if js* let*
      letfn* loop* new ns quote recur set! throw try})
@@ -52,8 +44,7 @@
           (keys (a/ns-vars env context-ns true))
           (keys (a/core-macros env context-ns))
           (keys (a/imports env context-ns))
-          (vals (a/imports env context-ns))
-          (ns-classes env context-ns)))
+          (vals (a/imports env context-ns))))
 
 (defn potential-completions
   [env sym context-ns]
