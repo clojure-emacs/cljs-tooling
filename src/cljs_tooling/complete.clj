@@ -56,10 +56,10 @@
   "Return a sequence of matching completions given current namespace and a prefix string"
   ([env prefix] (completions env prefix nil))
   ([env prefix context-ns]
-     (->> (potential-completions env (u/as-sym prefix) (u/as-sym context-ns))
-          distinct
-          (map str)
-          (filter #(.startsWith % prefix))
-          sort)))
+   (->> (potential-completions env (u/as-sym prefix) (u/as-sym context-ns))
+        distinct
+        (map str)
+        (filter #(.startsWith % prefix))
+        sort)))
 
 
