@@ -108,7 +108,7 @@
     (apply dissoc vars excludes)))
 
 (defn ns-vars
-  "Vars visible to the ns"
+  "Returns a list of vars visible to the ns."
   ([env ns] (ns-vars env ns false))
   ([env ns include-core?]
    (merge (->> (find-ns env ns)
