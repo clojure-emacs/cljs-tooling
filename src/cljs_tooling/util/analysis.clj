@@ -2,7 +2,6 @@
   (:require [cljs-tooling.util.misc :as u])
   (:refer-clojure :exclude [find-ns find-var all-ns ns-aliases]))
 
-
 (def NSES :cljs.analyzer/namespaces)
 
 (defn all-ns
@@ -22,7 +21,6 @@
     (get (:defs ns) (-> sym name symbol))))
 
 ;; Code adapted from clojure-complete (http://github.com/ninjudd/clojure-complete)
-
 
 (defn ns-aliases
   "Returns a map of [ns-name-or-alias] to [ns-name] for the given namespace."
