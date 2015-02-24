@@ -21,15 +21,23 @@
   ([ns] (keys (a/public-macros ns)))
   ([ns prefix] (prefix-completions prefix (macro-ns-completions ns))))
 
+(defn- scope->ns
+  [env scope context-ns]
+  (if (a/find-ns env scope)
+    scope
+    (a/to-ns env scope context-ns)))
+
+(defn- scope->macro-ns
+  [env scope context-ns]
+  (if (= scope 'cljs.core)
+    scope
+    (a/to-macro-ns env scope context-ns)))
+
 (defn scoped-completions
   [env sym context-ns]
   (let [scope (symbol (namespace sym))
-        ns (if (a/find-ns env scope)
-             scope
-             (a/to-ns env scope context-ns))
-        macro-ns (if (= scope 'cljs.core)
-                   scope
-                   (a/to-macro-ns env scope context-ns))]
+        ns (scope->ns scope)
+        macro-ns (scope->macro-ns scope)]
     (concat (ns-completions env ns scope)
             (macro-ns-completions macro-ns scope))))
 
