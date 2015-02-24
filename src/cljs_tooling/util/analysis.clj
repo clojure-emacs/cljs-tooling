@@ -22,10 +22,20 @@
 
 ;; Code adapted from clojure-complete (http://github.com/ninjudd/clojure-complete)
 
+(defn imports
+  "Returns a map of [import-name] to [ns-qualified-import-name] for all imports
+  in the given namespace."
+  [env ns]
+  (:imports (find-ns env ns)))
+
 (defn ns-aliases
   "Returns a map of [ns-name-or-alias] to [ns-name] for the given namespace."
   [env ns]
-  (:requires (find-ns env ns)))
+  (let [imports (imports env ns)]
+    (->> (find-ns env ns)
+         :requires
+         (filter #(not (contains? imports (key %))))
+         (into {}))))
 
 (defn macro-ns-aliases
   "Returns a map of [macro-ns-name-or-alias] to [macro-ns-name] for the given namespace."
@@ -51,12 +61,6 @@
   (->> (find-ns env ns)
        :use-macros
        expand-refer-map))
-
-(defn imports
-  "Returns a map of [import-name] to [ns-qualified-import-name] for all imports
-  in the given namespace."
-  [env ns]
-  (:imports (find-ns env ns)))
 
 (defn to-ns
   "If sym is an alias to, or the name of, a namespace referred to in ns, returns
