@@ -97,7 +97,7 @@
 (defn public-macros
   "Returns a list of the public macros declared in the ns."
   [ns]
-  (if (and ns (clojure.core/find-ns ns))
+  (when (and ns (clojure.core/find-ns ns))
     (->> (ns-publics ns)
          (filter macro?)
          (into {}))))
