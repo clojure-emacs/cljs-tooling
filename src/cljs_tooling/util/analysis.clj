@@ -82,17 +82,27 @@
   [var]
   ((complement :anonymous) (val var)))
 
-(defn public-vars
-  "Returns a list of the public vars declared in the ns."
-  [env ns]
-  (let [vars (:defs (find-ns env ns))]
-    (into {} (filter (every-pred public? named?) vars))))
-
 (defn- macro?
   [var]
   (-> (val var)
       meta
       :macro))
+
+(defn ns-vars
+  "Returns a list of the vars declared in the ns."
+  [env ns]
+  (->> (find-ns env ns)
+       :defs
+       (filter named?)
+       (into {})))
+
+(defn public-vars
+  "Returns a list of the public vars declared in the ns."
+  [env ns]
+  (->> (find-ns env ns)
+       :defs
+       (filter (every-pred named? public?))
+       (into {})))
 
 (defn public-macros
   "Returns a list of the public macros declared in the ns."
@@ -108,16 +118,6 @@
   (let [vars (public-vars env 'cljs.core)
         excludes (:excludes (find-ns env ns))]
     (apply dissoc vars excludes)))
-
-(defn ns-vars
-  "Returns a list of vars visible to the ns."
-  ([env ns] (ns-vars env ns false))
-  ([env ns include-core?]
-   (merge (->> (find-ns env ns)
-               :defs
-               (filter named?)
-               (into {}))
-          (if include-core? (core-vars env ns)))))
 
 (defn core-macros
   "Returns a list of cljs.core macros visible to the ns."
