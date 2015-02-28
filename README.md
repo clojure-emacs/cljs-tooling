@@ -5,7 +5,7 @@
 A Clojure library designed to provide tooling support for ClojureScript.
 Currently it provides var info and auto-completion based on compiler state.
 
-It is the basis for clojurescript source navigation in clojure-emacs/cider-nrepl, but is separate for the sake of test-harnesses, decoupled development.
+It is the basis for clojurescript features in [clojure-emacs/cider-nrepl](https://github.com/clojure-emacs/cider-nrepl) including source navigation and autocompletion, but is separate for the sake of test-harnesses, decoupled development.
 
 ## Artifacts
 
