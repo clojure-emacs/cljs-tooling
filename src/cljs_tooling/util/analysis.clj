@@ -2,7 +2,6 @@
   (:require [cljs-tooling.util.misc :as u])
   (:refer-clojure :exclude [find-ns find-var all-ns ns-aliases]))
 
-
 (def NSES :cljs.analyzer/namespaces)
 
 (defn all-ns
@@ -23,11 +22,20 @@
 
 ;; Code adapted from clojure-complete (http://github.com/ninjudd/clojure-complete)
 
+(defn imports
+  "Returns a map of [import-name] to [ns-qualified-import-name] for all imports
+  in the given namespace."
+  [env ns]
+  (:imports (find-ns env ns)))
 
 (defn ns-aliases
   "Returns a map of [ns-name-or-alias] to [ns-name] for the given namespace."
   [env ns]
-  (:requires (find-ns env ns)))
+  (let [imports (imports env ns)]
+    (->> (find-ns env ns)
+         :requires
+         (filter #(not (contains? imports (key %))))
+         (into {}))))
 
 (defn macro-ns-aliases
   "Returns a map of [macro-ns-name-or-alias] to [macro-ns-name] for the given namespace."
@@ -54,12 +62,6 @@
        :use-macros
        expand-refer-map))
 
-(defn imports
-  "Returns a map of [import-name] to [ns-qualified-import-name] for all imports
-  in the given namespace."
-  [env ns]
-  (:imports (find-ns env ns)))
-
 (defn to-ns
   "If sym is an alias to, or the name of, a namespace referred to in ns, returns
   the name of the namespace; else returns nil."
@@ -80,22 +82,32 @@
   [var]
   ((complement :anonymous) (val var)))
 
-(defn public-vars
-  "Returns a list of the public vars declared in the ns."
-  [env ns]
-  (let [vars (:defs (find-ns env ns))]
-    (into {} (filter (every-pred public? named?) vars))))
-
 (defn- macro?
   [var]
   (-> (val var)
       meta
       :macro))
 
+(defn ns-vars
+  "Returns a list of the vars declared in the ns."
+  [env ns]
+  (->> (find-ns env ns)
+       :defs
+       (filter named?)
+       (into {})))
+
+(defn public-vars
+  "Returns a list of the public vars declared in the ns."
+  [env ns]
+  (->> (find-ns env ns)
+       :defs
+       (filter (every-pred named? public?))
+       (into {})))
+
 (defn public-macros
   "Returns a list of the public macros declared in the ns."
   [ns]
-  (if (and ns (clojure.core/find-ns ns))
+  (when (and ns (clojure.core/find-ns ns))
     (->> (ns-publics ns)
          (filter macro?)
          (into {}))))
@@ -106,16 +118,6 @@
   (let [vars (public-vars env 'cljs.core)
         excludes (:excludes (find-ns env ns))]
     (apply dissoc vars excludes)))
-
-(defn ns-vars
-  "Vars visible to the ns"
-  ([env ns] (ns-vars env ns false))
-  ([env ns include-core?]
-   (merge (->> (find-ns env ns)
-               :defs
-               (filter named?)
-               (into {}))
-          (if include-core? (core-vars env ns)))))
 
 (defn core-macros
   "Returns a list of cljs.core macros visible to the ns."

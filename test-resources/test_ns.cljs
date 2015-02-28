@@ -3,3 +3,5 @@
   (:require [cljs.core.async :refer [sliding-buffer]]
             [clojure.string]
             [om.core]))
+
+(defrecord TestRecord [a b c])
