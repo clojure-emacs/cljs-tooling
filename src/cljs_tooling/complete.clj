@@ -193,5 +193,3 @@
           distinct-candidates
           (filter #(candidate-match? % prefix))
           (sort-by :candidate)))))
-
-
