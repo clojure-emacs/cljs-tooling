@@ -35,8 +35,10 @@
     (testing "All candidates have a string for :candidate"
       (is (every? (comp string? :candidate) all-candidates)))
 
-    (testing "All candidates have a symbol for :ns"
-      (is (every? (comp symbol? :ns) all-candidates)))
+    (testing "All candidates that should have a symbol for :ns, do"
+      (let [filtered-candidates (filter #(not (#{:namespace :import} (:type %)))
+                                        all-candidates)]
+        (is (every? (comp symbol? :ns) filtered-candidates))))
 
     (testing "All candidates have a valid :type"
       (let [valid-types #{:function
@@ -58,7 +60,7 @@
 
 (deftest namespace-completions
   (testing "Namespace"
-    (is (= '({:candidate "cljs.core.async.impl.timers" :ns cljs.core.async.impl.timers :type :namespace})
+    (is (= '({:candidate "cljs.core.async.impl.timers" :type :namespace})
            (completions "cljs.core.async.impl.t")
            (completions "cljs.core.async.impl.t" "om.core")
            (completions "cljs.core.async.impl.t" "cljs.core.async"))))
@@ -75,7 +77,7 @@
     (is (= '()
            (completions "cljs.core.async.macros")
            (completions "cljs.core.async.macros" "om.core")))
-    (is (= '({:candidate "cljs.core.async.macros" :ns cljs.core.async.macros :type :namespace})
+    (is (= '({:candidate "cljs.core.async.macros" :type :namespace})
            (completions "cljs.core.async.macros" "cljs.core.async"))))
 
   (testing "Macro namespace alias"
@@ -174,14 +176,14 @@
     (is (= '()
            (completions "IdGen")
            (completions "IdGen" "cljs.core.async")))
-    (is (= '({:candidate "IdGenerator" :ns goog.ui.IdGenerator :type :import})
+    (is (= '({:candidate "IdGenerator" :type :import})
            (completions "IdGen" "om.core"))))
 
   (testing "Namespace-qualified import"
     (is (= '()
            (completions "goog.ui.IdGen")
            (completions "goog.ui.IdGen" "cljs.core.async")))
-    (is (= '({:candidate "goog.ui.IdGenerator" :ns goog.ui.IdGenerator :type :import})
+    (is (= '({:candidate "goog.ui.IdGenerator" :type :import})
            (completions "goog.ui.IdGen" "om.core")))))
 
 (deftest protocol-completions

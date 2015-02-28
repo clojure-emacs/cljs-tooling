@@ -6,9 +6,9 @@
 (defn- candidate-data
   "Returns a map of candidate data for the given arguments."
   [candidate ns type]
-  {:candidate (name candidate)
-   :ns (symbol ns)
-   :type type})
+  (merge {:candidate (name candidate)
+          :type type}
+         (when ns {:ns (symbol ns)})))
 
 (defn- var->type
   "Returns the candidate type corresponding to the given metadata map."
@@ -34,19 +34,21 @@
   "Returns candidate data for all namespaces in the environment."
   [env]
   (for [[ns _] (a/all-ns env)]
-    (candidate-data ns ns :namespace)))
+    (candidate-data ns nil :namespace)))
 
 (defn ns-candidates
   "Returns candidate data for all referred namespaces (and their aliases) in context-ns."
   [env context-ns]
-  (for [[alias ns] (a/ns-aliases env context-ns)]
+  (for [[alias ns] (a/ns-aliases env context-ns)
+        :let [ns (when-not (= alias ns) ns)]]
     (candidate-data alias ns :namespace)))
 
 (defn macro-ns-candidates
   "Returns candidate data for all referred macro namespaces (and their aliases) in
   context-ns."
   [env context-ns]
-  (for [[alias ns] (a/macro-ns-aliases env context-ns)]
+  (for [[alias ns] (a/macro-ns-aliases env context-ns)
+        :let [ns (when-not (= alias ns) ns)]]
     (candidate-data alias ns :namespace)))
 
 (defn referred-var-candidates
@@ -99,8 +101,8 @@
   [env context-ns]
   (flatten
    (for [[import qualified-name] (a/imports env context-ns)]
-     [(candidate-data import qualified-name :import)
-      (candidate-data qualified-name qualified-name :import)])))
+     [(candidate-data import nil :import)
+      (candidate-data qualified-name nil :import)])))
 
 (defn unscoped-candidates
   "Returns all non-namespace-qualified potential candidates in context-ns."
