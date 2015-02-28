@@ -101,8 +101,8 @@
   [env context-ns]
   (flatten
    (for [[import qualified-name] (a/imports env context-ns)]
-     [(candidate-data import nil :import)
-      (candidate-data qualified-name nil :import)])))
+     [(candidate-data import nil :class)
+      (candidate-data qualified-name nil :class)])))
 
 (defn unscoped-candidates
   "Returns all non-namespace-qualified potential candidates in context-ns."

@@ -42,7 +42,7 @@
 
     (testing "All candidates have a valid :type"
       (let [valid-types #{:function
-                          :import
+                          :class
                           :macro
                           :namespace
                           :protocol
@@ -176,14 +176,14 @@
     (is (= '()
            (completions "IdGen")
            (completions "IdGen" "cljs.core.async")))
-    (is (= '({:candidate "IdGenerator" :type :import})
+    (is (= '({:candidate "IdGenerator" :type :class})
            (completions "IdGen" "om.core"))))
 
   (testing "Namespace-qualified import"
     (is (= '()
            (completions "goog.ui.IdGen")
            (completions "goog.ui.IdGen" "cljs.core.async")))
-    (is (= '({:candidate "goog.ui.IdGenerator" :type :import})
+    (is (= '({:candidate "goog.ui.IdGenerator" :type :class})
            (completions "goog.ui.IdGen" "om.core")))))
 
 (deftest protocol-completions
