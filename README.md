@@ -3,10 +3,9 @@
 [![Continuous Integration status](https://secure.travis-ci.org/gtrak/cljs-tooling.png)](http://travis-ci.org/gtrak/cljs-tooling)
 
 A Clojure library designed to provide tooling support for ClojureScript.
-Currently it provides var info and auto-completion based on compiler state. The completion is a direct port of ninjudd/clojure-complete.
+Currently it provides var info and auto-completion based on compiler state.
 
-TODO:
-imports
+It is the basis for clojurescript source navigation in clojure-emacs/cider-nrepl, but is separate for the sake of test-harnesses, decoupled development.
 
 ## Artifacts
 
@@ -21,6 +20,10 @@ With leiningen:
 => (completions @cljs.env/*compiler* "al" 'cljs.core)
 ("alength" "alter-meta!")
 ```
+
+## Contributors
+* Gary Trakhman
+* Michael Griffiths
 
 ## License
 
