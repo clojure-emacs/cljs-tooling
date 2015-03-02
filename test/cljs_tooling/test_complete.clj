@@ -36,13 +36,14 @@
       (is (every? (comp string? :candidate) all-candidates)))
 
     (testing "All candidates that should have a symbol for :ns, do"
-      (let [filtered-candidates (filter #(not (#{:namespace :import} (:type %)))
-                                        all-candidates)]
+      (let [filter-fn #(not (#{:import :keyword :namespace} (:type %)))
+            filtered-candidates (filter filter-fn all-candidates)]
         (is (every? (comp symbol? :ns) filtered-candidates))))
 
     (testing "All candidates have a valid :type"
       (let [valid-types #{:function
                           :class
+                          :keyword
                           :macro
                           :namespace
                           :protocol
@@ -185,6 +186,12 @@
            (completions "goog.ui.IdGen" "cljs.core.async")))
     (is (= '({:candidate "goog.ui.IdGenerator" :type :class})
            (completions "goog.ui.IdGen" "om.core")))))
+
+(deftest keyword-completions
+  (testing "Keyword"
+    (is (= '({:candidate ":getDisplayName" :type :keyword}
+             {:candidate ":getInitialState" :type :keyword})
+           (completions ":get")))))
 
 (deftest protocol-completions
   (testing "Protocol"

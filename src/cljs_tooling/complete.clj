@@ -6,7 +6,7 @@
 (defn- candidate-data
   "Returns a map of candidate data for the given arguments."
   [candidate ns type]
-  (merge {:candidate (name candidate)
+  (merge {:candidate (str candidate)
           :type type}
          (when ns {:ns (symbol ns)})))
 
@@ -104,6 +104,11 @@
      [(candidate-data import nil :class)
       (candidate-data qualified-name nil :class)])))
 
+(defn keyword-candidates
+  "Returns candidate data for all keyword constants in the environment."
+  [env]
+  (map #(candidate-data % nil :keyword) (a/keyword-constants env)))
+
 (defn unscoped-candidates
   "Returns all non-namespace-qualified potential candidates in context-ns."
   [env context-ns]
@@ -116,7 +121,8 @@
           (ns-var-candidates env context-ns)
           (core-var-candidates env context-ns)
           (core-macro-candidates env context-ns)
-          (import-candidates env context-ns)))
+          (import-candidates env context-ns)
+          (keyword-candidates env)))
 
 (defn- prefix-candidate
   [prefix candidate-data]
