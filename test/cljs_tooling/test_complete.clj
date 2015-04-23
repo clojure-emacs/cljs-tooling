@@ -222,3 +222,14 @@
            (completions "unchecked-a")
            (completions "unchecked-a" "cljs.core.async")
            (completions "unchecked-a" {:context-ns "cljs.core.async"})))))
+
+(deftest extra-metadata
+  (testing ":arglists"
+    (is (= '({:candidate "unchecked-add" :ns cljs.core :type :function :arglists ("[]" "[x]" "[x y]" "[x y & more]")}
+             {:candidate "unchecked-add-int" :ns cljs.core :type :function :arglists ("[]" "[x]" "[x y]" "[x y & more]")})
+           (completions "unchecked-a" {:context-ns "cljs.core.async", :extra-metadata #{:arglists}}))))
+
+  (testing ":doc"
+    (is (= '({:candidate "unchecked-add" :ns cljs.core :type :function :doc "Returns the sum of nums. (+) returns 0."}
+             {:candidate "unchecked-add-int" :ns cljs.core :type :function :doc "Returns the sum of nums. (+) returns 0."})
+           (completions "unchecked-a" {:context-ns "cljs.core.async", :extra-metadata #{:doc}})))))
