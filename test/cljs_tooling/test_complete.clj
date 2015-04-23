@@ -214,3 +214,11 @@
     (is (= '({:candidate "ES6Iterator" :ns cljs.core :type :type}
              {:candidate "ES6IteratorSeq" :ns cljs.core :type :type})
            (completions "ES6I")))))
+
+(deftest options-map-test
+  (testing "options-map"
+    (is (= '({:candidate "unchecked-add" :ns cljs.core :type :function}
+             {:candidate "unchecked-add-int" :ns cljs.core :type :function})
+           (completions "unchecked-a")
+           (completions "unchecked-a" "cljs.core.async")
+           (completions "unchecked-a" {:context-ns "cljs.core.async"})))))

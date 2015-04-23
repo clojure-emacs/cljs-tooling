@@ -190,10 +190,14 @@
 
 (defn completions
   "Returns a sequence of candidate data for completions matching the given
-  prefix string and (optionally) the current namespace."
+  prefix string and options. If the third parameter is a string it's used
+  as :context-ns option.
+
+  - :context-ns - (optional) the current namespace"
   ([env prefix] (completions env prefix nil))
-  ([env prefix context-ns]
+  ([env prefix options-map]
    (let [prefix (u/as-sym prefix)
+         {:keys [context-ns] :as options-map} (if (string? options-map) {:context-ns options-map} options-map)
          context-ns (u/as-sym context-ns)]
      (->> (potential-candidates env prefix context-ns)
           distinct-candidates
