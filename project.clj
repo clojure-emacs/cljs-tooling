@@ -1,4 +1,4 @@
-(defproject cljs-tooling "0.1.6-SNAPSHOT"
+(defproject cljs-tooling "0.1.6"
   :description "Tooling support for cljs"
   :url "https://github.com/gtrak/cljs-tooling"
   :license {:name "Eclipse Public License"
