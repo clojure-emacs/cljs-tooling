@@ -188,14 +188,31 @@
   [candidate prefix]
   (.startsWith ^String (:candidate candidate) (str prefix)))
 
+(defn- enrich-candidate [candidate env {:keys [extra-metadata]}]
+  (if (seq extra-metadata)
+    (let [var-meta (a/find-var env (symbol (str (:ns candidate)) (:candidate candidate)))]
+      (cond-> candidate
+        (and (:arglists extra-metadata) (:arglists var-meta))
+        (assoc :arglists (apply list (map pr-str (eval (:arglists var-meta)))))
+
+        (and (:doc extra-metadata) (:doc var-meta))
+        (assoc :doc (:doc var-meta))))
+    candidate))
+
 (defn completions
   "Returns a sequence of candidate data for completions matching the given
-  prefix string and (optionally) the current namespace."
+  prefix string and options. If the third parameter is a string it's used
+  as :context-ns option.
+
+  - :context-ns - (optional) the current namespace;
+  - :extra-metadata - set of additional fields (:arglists, :doc) to add to the response maps."
   ([env prefix] (completions env prefix nil))
-  ([env prefix context-ns]
+  ([env prefix options-map]
    (let [prefix (u/as-sym prefix)
+         {:keys [context-ns] :as options-map} (if (string? options-map) {:context-ns options-map} options-map)
          context-ns (u/as-sym context-ns)]
      (->> (potential-candidates env prefix context-ns)
           distinct-candidates
           (filter #(candidate-match? % prefix))
+          (map #(enrich-candidate % env options-map))
           (sort-by :candidate)))))
