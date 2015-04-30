@@ -232,4 +232,8 @@
   (testing ":doc"
     (is (= '({:candidate "unchecked-add" :ns cljs.core :type :function :doc "Returns the sum of nums. (+) returns 0."}
              {:candidate "unchecked-add-int" :ns cljs.core :type :function :doc "Returns the sum of nums. (+) returns 0."})
-           (completions "unchecked-a" {:context-ns "cljs.core.async", :extra-metadata #{:doc}})))))
+           (completions "unchecked-a" {:context-ns "cljs.core.async", :extra-metadata #{:doc}}))))
+
+  (testing "macro metadata"
+    (is (= '({:candidate "defprotocol", :ns cljs.core, :type :macro, :arglists ("[psym & doc+methods]")})
+           (completions "defproto" {:context-ns "cljs.user", :extra-metadata #{:arglists}})))))
