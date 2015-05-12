@@ -1,7 +1,8 @@
 (ns cljs-tooling.complete
   "Standalone auto-complete library based on cljs analyzer state"
   (:require [cljs-tooling.util.analysis :as a]
-            [cljs-tooling.util.misc :as u]))
+            [cljs-tooling.util.misc :as u]
+            [cljs-tooling.info :as i]))
 
 (defn- candidate-data
   "Returns a map of candidate data for the given arguments."
@@ -188,12 +189,12 @@
   [candidate prefix]
   (.startsWith ^String (:candidate candidate) (str prefix)))
 
-(defn- enrich-candidate [candidate env {:keys [extra-metadata]}]
+(defn- enrich-candidate [candidate env {:keys [context-ns extra-metadata]}]
   (if (seq extra-metadata)
-    (let [var-meta (a/find-var env (symbol (str (:ns candidate)) (:candidate candidate)))]
+    (let [var-meta (i/info env (symbol (str (:ns candidate)) (:candidate candidate)) context-ns)]
       (cond-> candidate
         (and (:arglists extra-metadata) (:arglists var-meta))
-        (assoc :arglists (apply list (map pr-str (eval (:arglists var-meta)))))
+        (assoc :arglists (apply list (map pr-str (:arglists var-meta))))
 
         (and (:doc extra-metadata) (:doc var-meta))
         (assoc :doc (:doc var-meta))))
