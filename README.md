@@ -11,7 +11,7 @@ It is the basis for clojurescript features in [clojure-emacs/cider-nrepl](https:
 
 With leiningen:
 
-     [cljs-tooling "0.1.6"]
+     [cljs-tooling "0.1.7"]
 
 ## Usage
 
@@ -23,7 +23,8 @@ With leiningen:
 
 ## Contributors
 * Gary Trakhman
-* Michael Griffiths
+* Michael Griffiths (@cichli)
+* Juho Teperi (@Deraen)
 
 ## License
 
