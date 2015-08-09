@@ -82,6 +82,11 @@
   [var]
   ((complement :anonymous) (val var)))
 
+(defn- foreign-protocol?
+  [[_ var]]
+  (and (:impls var)
+       (not (:protocol-symbol var))))
+
 (defn- macro?
   [var]
   (-> (val var)
@@ -93,7 +98,7 @@
   [env ns]
   (->> (find-ns env ns)
        :defs
-       (filter named?)
+       (filter (every-pred named? (complement foreign-protocol?)))
        (into {})))
 
 (defn public-vars
@@ -101,7 +106,7 @@
   [env ns]
   (->> (find-ns env ns)
        :defs
-       (filter (every-pred named? public?))
+       (filter (every-pred named? public? (complement foreign-protocol?)))
        (into {})))
 
 (defn public-macros
