@@ -75,25 +75,28 @@
   (get (macro-ns-aliases env ns) (u/as-sym sym)))
 
 (defn- public?
-  [var]
-  ((complement :private) (val var)))
+  [[_ var]]
+  (not (:private var)))
 
 (defn- named?
-  [var]
-  ((complement :anonymous) (val var)))
+  [[_ var]]
+  (not (:anonymous var)))
+
+(defn- foreign-protocol?
+  [[_ var]]
+  (and (:impls var)
+       (not (:protocol-symbol var))))
 
 (defn- macro?
-  [var]
-  (-> (val var)
-      meta
-      :macro))
+  [[_ var]]
+  (:macro (meta var)))
 
 (defn ns-vars
   "Returns a list of the vars declared in the ns."
   [env ns]
   (->> (find-ns env ns)
        :defs
-       (filter named?)
+       (filter (every-pred named? (complement foreign-protocol?)))
        (into {})))
 
 (defn public-vars
@@ -101,7 +104,7 @@
   [env ns]
   (->> (find-ns env ns)
        :defs
-       (filter (every-pred named? public?))
+       (filter (every-pred named? public? (complement foreign-protocol?)))
        (into {})))
 
 (defn public-macros

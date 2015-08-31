@@ -32,8 +32,8 @@
   "Format it similarly to metadata on a var"
   [context-ns var]
   (-> (select-keys var [:arglists :name :line :column :file :doc])
-      (merge {:name (-> var :name name u/as-sym)
-              :ns (-> var :name namespace u/as-sym)})
+      (merge {:name (some-> var :name name u/as-sym)
+              :ns (some-> var :name namespace u/as-sym)})
       (update-in [:arglists] unquote-1)))
 
 (defn format-macro

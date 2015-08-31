@@ -71,7 +71,7 @@
   [vars]
   (for [[name meta] vars
         :let [qualified-name (:name meta)
-              ns (namespace qualified-name)
+              ns (some-> qualified-name namespace)
               type (var->type meta)]]
     (candidate-data name ns type)))
 
