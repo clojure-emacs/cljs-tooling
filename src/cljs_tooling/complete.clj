@@ -2,7 +2,8 @@
   "Standalone auto-complete library based on cljs analyzer state"
   (:require [cljs-tooling.util.analysis :as a]
             [cljs-tooling.util.misc :as u]
-            [cljs-tooling.info :as i]))
+            [cljs-tooling.info :as i]
+            [clojure.set :as set]))
 
 (defn- candidate-data
   "Returns a map of candidate data for the given arguments."
@@ -110,6 +111,28 @@
   [env]
   (map #(candidate-data % nil :keyword) (a/keyword-constants env)))
 
+(defn namespaced-keyword-candidates
+  "Returns all namespaced keywords defined in context-ns."
+  [env context-ns]
+  (when context-ns
+    (for [kw (a/keyword-constants env)
+          :when (= context-ns (u/as-sym (namespace kw)))]
+      (candidate-data (str "::" (name kw)) context-ns :keyword))))
+
+(defn referred-namespaced-keyword-candidates
+  "Returns all namespaced keywords referred in context-ns."
+  [env context-ns]
+  (when context-ns
+    (let [aliases (->> (a/ns-aliases env context-ns)
+                       (filter (fn [[k v]] (not= k v)))
+                       (into {})
+                       (set/map-invert))]
+      (for [kw (a/keyword-constants env)
+            :let [ns (u/as-sym (namespace kw))
+                  alias (get aliases ns)]
+            :when alias]
+        (candidate-data (str "::" alias "/" (name kw)) ns :keyword)))))
+
 (defn unscoped-candidates
   "Returns all non-namespace-qualified potential candidates in context-ns."
   [env context-ns]
@@ -123,7 +146,9 @@
           (core-var-candidates env context-ns)
           (core-macro-candidates env context-ns)
           (import-candidates env context-ns)
-          (keyword-candidates env)))
+          (keyword-candidates env)
+          (namespaced-keyword-candidates env context-ns)
+          (referred-namespaced-keyword-candidates env context-ns)))
 
 (defn- prefix-candidate
   [prefix candidate-data]
@@ -175,7 +200,7 @@
   macros required in context-ns). Otherwise, all non-namespace-qualified
   candidates for context-ns will be returned."
   [env sym context-ns]
-  (if (namespace sym)
+  (if (and (namespace sym) (not (.startsWith (str sym) ":")))
     (scoped-candidates env sym context-ns)
     (unscoped-candidates env context-ns)))
 

@@ -191,7 +191,19 @@
   (testing "Keyword"
     (is (= '({:candidate ":getDisplayName" :type :keyword}
              {:candidate ":getInitialState" :type :keyword})
-           (completions ":get")))))
+           (completions ":get"))))
+
+  (testing "Local namespaced keyword"
+    (is (= '({:candidate "::some-namespaced-keyword" :ns cljs-tooling.test-ns :type :keyword})
+           (completions "::so" "cljs-tooling.test-ns")))
+
+    (is (= '()
+           (completions "::i" "cljs-tooling.test-ns"))))
+
+  (testing "Referred namespaced keyword"
+    (is (= '({:candidate "::om/id" :ns om.core :type :keyword}
+             {:candidate "::om/index" :ns om.core :type :keyword})
+           (completions "::om/i" "cljs-tooling.test-ns")))))
 
 (deftest protocol-completions
   (testing "Protocol"
