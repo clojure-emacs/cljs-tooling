@@ -1,4 +1,4 @@
-(defproject cljs-tooling "0.1.7"
+(defproject cljs-tooling "0.1.8"
   :description "Tooling support for cljs"
   :url "https://github.com/clojure-emacs/cljs-tooling"
   :license {:name "Eclipse Public License"
