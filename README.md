@@ -26,7 +26,7 @@ With leiningen:
 
 ## Contributors
 
-* [Gary Trakhman](http://github.com/gtrack)
+* [Gary Trakhman](http://github.com/gtrak)
 * [Michael Griffiths](http://github.com/cichli)
 * [Juho Teperi](http://github.com/Deraen)
 
