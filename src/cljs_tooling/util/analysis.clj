@@ -132,4 +132,4 @@
 (defn keyword-constants
   "Returns a list of keyword constants in the environment."
   [env]
-  (keys (:cljs.analyzer/constant-table env)))
+  (filter keyword? (keys (:cljs.analyzer/constant-table env))))
