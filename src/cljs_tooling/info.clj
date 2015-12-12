@@ -15,7 +15,7 @@
   (let [ns (find-ns ns)]
     {:author (:author (meta ns))
      :doc (:doc (meta ns))
-     :file (-> ns ns-interns first val meta :file)
+     :file (some-> ns ns-interns first val meta :file)
      :line 1
      :name (ns-name ns)
      :ns (ns-name ns)}))
