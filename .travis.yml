@@ -1,4 +1,8 @@
 language: clojure
+sudo: false
+cache:
+  directories:
+    - $HOME/.m2
 script: lein2 do clean, test
 branches:
   only:
