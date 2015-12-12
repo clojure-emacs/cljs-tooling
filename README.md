@@ -14,7 +14,7 @@ the sake of test-harnesses and decoupled development.
 
 With leiningen:
 
-     [cljs-tooling "0.1.9"]
+     [cljs-tooling "0.1.10"]
 
 ## Usage
 
