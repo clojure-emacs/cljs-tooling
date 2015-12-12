@@ -2,7 +2,6 @@
   (:require [cljs-tooling.util.analysis :as a]
             [cljs-tooling.util.misc :as u]))
 
-;;; TODO
 (defn format-ns
   [ns]
   (merge (select-keys ns [:doc :author])
