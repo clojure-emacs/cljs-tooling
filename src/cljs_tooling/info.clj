@@ -68,14 +68,14 @@
   (let [sym (u/as-sym sym)
         context-ns (u/as-sym context-ns)]
     (u/cond-let
-     ;; macro ns
-     [macro-ns (find-ns sym)] (format-macro-ns sym)
-
      ;; an NS
      [ns (a/find-ns env sym)] (format-ns ns)
 
      ;; ns alias
      [ns-alias (a/to-ns env sym context-ns)] (format-ns (a/find-ns env ns-alias))
+
+     ;; macro ns
+     [macro-ns (find-ns sym)] (format-macro-ns sym)
 
      ;; macro ns alias
      [macro-ns-alias (a/to-macro-ns env sym context-ns)] (format-macro-ns macro-ns-alias)

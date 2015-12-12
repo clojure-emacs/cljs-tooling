@@ -36,7 +36,7 @@
 
   (testing "Namespace itself"
     (is (= (-> (info 'cljs.core) keys sort)
-           (sort '(:ns :name :line :file :doc :author)))))
+           (sort '(:ns :name :line :file :doc)))))
 
   (testing "Aliased var"
     (let [res (info 'dispatch/process-messages 'cljs.core.async)]
@@ -69,6 +69,7 @@
   (testing "Macro namespace"
     (is (= (info 'cljs.core.async.macros)
            (info 'cljs.core.async.macros 'cljs.core.async)
+           (info 'cljs.core.async.macros 'cljs-tooling.test-ns)
            '{:author nil
              :ns cljs.core.async.macros
              :doc nil

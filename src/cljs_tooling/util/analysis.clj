@@ -6,11 +6,18 @@
 
 (defn all-ns
   [env]
-  (NSES env))
+  (->> (NSES env)
+       ;; recent CLJS versions include data about macro namespaces in the
+       ;; compiler env, but we should not include them in completions or pass
+       ;; them to format-ns unless they're actually required (which is handled
+       ;; by macro-ns-candidates below)
+       (into {} (filter (fn [[_ ns]]
+                          (not (and (contains? ns :macros)
+                                    (= 1 (count ns)))))))))
 
 (defn find-ns
   [env ns]
-  (get-in env [NSES (u/as-sym ns)]))
+  (get (all-ns env) (u/as-sym ns)))
 
 (defn find-var
   "Given a namespace-qualified var name, gets the analyzer metadata for that

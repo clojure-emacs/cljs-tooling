@@ -33,10 +33,8 @@
                cljs.core.async.impl.channels
                cljs.core.async.impl.dispatch
                cljs.core.async.impl.ioc-helpers
-               cljs.core.async.impl.ioc-macros
                cljs.core.async.impl.protocols
                cljs.core.async.impl.timers
-               cljs.core.async.macros
                cljs.user
                clojure.string
                om.core

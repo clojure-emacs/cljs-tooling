@@ -35,14 +35,7 @@
 (defn all-ns-candidates
   "Returns candidate data for all namespaces in the environment."
   [env]
-  (for [[ns _] (->> (a/all-ns env)
-                    ;; recent CLJS versions include data about macro namespaces
-                    ;; in the compiler env, but we should not include them in
-                    ;; completions unless they're actually required (which is
-                    ;; handled by macro-ns-candidates below)
-                    (into {} (filter (fn [[_ ns]]
-                                       (not (and (contains? ns :macros)
-                                                 (= 1 (count ns))))))))]
+  (for [[ns _] (a/all-ns env)]
     (candidate-data ns nil :namespace)))
 
 (defn ns-candidates
