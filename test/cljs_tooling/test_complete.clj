@@ -202,7 +202,8 @@
 
   (testing "Referred namespaced keyword"
     (is (= '({:candidate "::om/id" :ns om.core :type :keyword}
-             {:candidate "::om/index" :ns om.core :type :keyword})
+             {:candidate "::om/index" :ns om.core :type :keyword}
+             {:candidate "::om/invalid" :ns om.core :type :keyword})
            (completions "::om/i" "cljs-tooling.test-ns")))))
 
 (deftest protocol-completions

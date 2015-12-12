@@ -36,7 +36,7 @@
 
   (testing "Namespace itself"
     (is (= (-> (info 'cljs.core) keys sort)
-           (sort '(:ns :name :line :file :doc)))))
+           (sort '(:ns :name :line :file :doc :author)))))
 
   (testing "Aliased var"
     (let [res (info 'dispatch/process-messages 'cljs.core.async)]
@@ -53,7 +53,7 @@
       (is (= (select-keys res [:ns :column :line :name :arglists :doc])
              '{:ns clojure.string
                :column 1
-               :line 147
+               :line 165
                :name trim
                :arglists ([s])
                :doc "Removes whitespace from both ends of string."}))))
@@ -95,9 +95,9 @@
            (info 'cljs.core/loop 'cljs.core.async)
            '{:ns cljs.core
              :doc "Evaluates the exprs in a lexical context in which the symbols in\n  the binding-forms are bound to their respective init-exprs or parts\n  therein. Acts as a recur target."
-             :file "cljs/core.clj"
+             :file "cljs/core.cljc"
              :column 1
-             :line 159
+             :line 732
              :name loop
              :arglists ([bindings & body])})))
 
