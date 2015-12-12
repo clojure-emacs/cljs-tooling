@@ -11,3 +11,10 @@ jdk:
   - openjdk7
   - oraclejdk7
   - oraclejdk8
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/14f0f7b4d5b20a70d032
+    on_success: change
+    on_failure: change
+    on_start: never
