@@ -7,9 +7,10 @@ A Clojure library designed to provide tooling support for ClojureScript.
 Currently it provides var info and auto-completion based on compiler state.
 
 It is the basis for ClojureScript features in
-[cider-nrepl](https://github.com/clojure-emacs/cider-nrepl),
-including source navigation and auto-completion, but is separate for
-the sake of test-harnesses and decoupled development.
+[cider-nrepl](https://github.com/clojure-emacs/cider-nrepl) (and in
+CIDER respectively), including source navigation and auto-completion,
+but is separate for the sake of test-harnesses and decoupled
+development.
 
 ## Artifacts
 
@@ -19,10 +20,25 @@ With leiningen:
 
 ## Usage
 
+### Var info
+
+```clojure
+cljs-tooling.info> (info @cljs.env/*compiler* 'go 'cljs.core.async)
+=> {:ns cljs.core.async.macros
+    :doc "Asynchronously executes the body, returning immediately to the\n  calling thread. Additionally, any visible calls to <!, >! and alt!/alts!\n  channel operations within the body will block (if necessary) by\n  'parking' the calling thread rather than tying up an OS thread (or\n  the only JS thread when in ClojureScript). Upon completion of the\n  operation, the body will be resumed.\n\n  Returns a channel which will receive the result of the body when\n  completed"
+    :file "cljs/core/async/macros.clj"
+    :column 1
+    :line 4
+    :name go
+    :arglists ([& body])}
+```
+
+### Completion
+
 ```clojure
 ;; env is pulled from cljs compiler state
-=> (completions @cljs.env/*compiler* "al" 'cljs.core)
-("alength" "alter-meta!")
+cljs-tooling.complete> (completions @cljs.env/*compiler* "al" 'cljs.core)
+=> ("alength" "alter-meta!")
 ```
 
 ## Contributors

@@ -1,5 +1,5 @@
 (defproject cljs-tooling "0.2.0"
-  :description "Tooling support for cljs"
+  :description "Tooling support for ClojureScript"
   :url "https://github.com/clojure-emacs/cljs-tooling"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
