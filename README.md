@@ -1,6 +1,7 @@
-# cljs-tooling
-
 [![Continuous Integration status](https://travis-ci.org/clojure-emacs/cljs-tooling.svg)](http://travis-ci.org/clojure-emacs/cljs-tooling)
+[![Dependencies Status](https://versions.deps.co/clojure-emacs/cljs-tooling/status.svg)](https://versions.deps.co/clojure-emacs/cljs-tooling)
+
+# cljs-tooling
 
 A Clojure library designed to provide tooling support for ClojureScript.
 Currently it provides var info and auto-completion based on compiler state.
