@@ -1,15 +1,11 @@
 (ns cljs-tooling.test-complete
-  (:require [clojure.tools.reader.edn :as edn]
-            [clojure.java.io :as io]
+  (:require [clojure.test :as test #?(:clj :refer :cljs :refer-macros) [deftest is testing use-fixtures]]
+            [clojure.tools.reader.edn :as edn]
             [clojure.walk :as walk]
             [clojure.string :as s]
-            [clojure.test :refer :all]
-            [cljs-tooling.complete :as cc]
+            [clojure.set :as set]
             [cljs-tooling.test-env :as test-env]
-            [cljs.core]
-            [cljs.core.async.macros]
-            [cljs.core.async.impl.ioc-macros]
-            [om.core]))
+            [cljs-tooling.complete :as cc]))
 
 (use-fixtures :once test-env/wrap-test-env)
 
@@ -36,7 +32,7 @@
       (is (every? (comp string? :candidate) all-candidates)))
 
     (testing "All candidates that should have a symbol for :ns, do"
-      (let [filter-fn #(not (#{:import :keyword :namespace} (:type %)))
+      (let [filter-fn #(not (#{:import :keyword :namespace :class} (:type %)))
             filtered-candidates (filter filter-fn all-candidates)]
         (is (every? (comp symbol? :ns) filtered-candidates))))
 
@@ -63,13 +59,13 @@
   (testing "Namespace"
     (is (= '({:candidate "cljs.core.async.impl.timers" :type :namespace})
            (completions "cljs.core.async.impl.t")
-           (completions "cljs.core.async.impl.t" "om.core")
+           (completions "cljs.core.async.impl.t" "mount.core")
            (completions "cljs.core.async.impl.t" "cljs.core.async"))))
 
   (testing "Namespace alias"
     (is (= '()
            (completions "timers")
-           (completions "timers" "om.core")))
+           (completions "timers" "mount.core")))
     (is (= '({:candidate "timers" :ns cljs.core.async.impl.timers :type :namespace})
            (completions "timers" "cljs.core.async")))))
 
@@ -77,9 +73,11 @@
   (testing "Macro namespace"
     (is (= '()
            (completions "cljs.core.async.macros")
-           (completions "cljs.core.async.macros" "om.core")))
-    (is (= '({:candidate "cljs.core.async.macros" :type :namespace})
-           (completions "cljs.core.async.macros" "cljs.core.async"))))
+           (completions "cljs.core.async.macros" "mount.core")))
+    (is (= '({:candidate "cljs.core.async.impl.ioc-macros" :type :namespace}
+             ;; andare contains one additional namespace
+             #?(:cljs {:candidate "cljs.core.async.impl.ioc-macros-runtime" :type :namespace}))
+           (completions "cljs.core.async.impl.ioc-macros" "cljs.core.async"))))
 
   (testing "Macro namespace alias"
     (is (= '()
@@ -110,13 +108,13 @@
   (testing "Namespace-qualified fn"
     (is (= '({:candidate "cljs.core.async/sliding-buffer" :ns cljs.core.async :type :function})
            (completions "cljs.core.async/sli")
-           (completions "cljs.core.async/sli" "om.core")
+           (completions "cljs.core.async/sli" "mount.core")
            (completions "cljs.core.async/sli" "cljs.core.async"))))
 
   (testing "Referred fn"
     (is (= '()
            (completions "sli")
-           (completions "sli" "om.core")))
+           (completions "sli" "mount.core")))
     (is (= '({:candidate "sliding-buffer" :ns cljs.core.async :type :function})
            (completions "sli" "cljs-tooling.test-ns"))))
 
@@ -127,7 +125,7 @@
   (testing "Private fn"
     (is (= '()
            (completions "cljs.core.async/fhno")
-           (completions "cljs.core.async/fhno" "om.core")))
+           (completions "cljs.core.async/fhno" "mount.core")))
     (is (= '({:candidate "fhnop" :ns cljs.core.async :type :var})
            (completions "fhno" "cljs.core.async"))))
 
@@ -145,11 +143,11 @@
     (is (= '({:candidate "cond->" :ns cljs.core :type :macro}
              {:candidate "cond->>" :ns cljs.core :type :macro})
            (completions "cond-")
-           (completions "cond-" "om.core")))
+           (completions "cond-" "mount.core")))
     (is (= '({:candidate "cljs.core/cond->" :ns cljs.core :type :macro}
              {:candidate "cljs.core/cond->>" :ns cljs.core :type :macro})
            (completions "cljs.core/cond-")
-           (completions "cljs.core/cond-" "om.core"))))
+           (completions "cljs.core/cond-" "mount.core"))))
 
   (testing "Excluded cljs.core macro"
     (is (= '()
@@ -160,16 +158,16 @@
   (testing "Namespace-qualified macro"
     (is (= '()
            (completions "cljs.core.async.macros/go")
-           (completions "cljs.core.async.macros/go" "om.core")))
-    (is (= '({:candidate "cljs.core.async.macros/go" :ns cljs.core.async.macros :type :macro}
-             {:candidate "cljs.core.async.macros/go-loop" :ns cljs.core.async.macros :type :macro})
-           (completions "cljs.core.async.macros/go" "cljs.core.async"))))
+           (completions "cljs.core.async.macros/go" "mount.core")))
+    (is (= '({:candidate "cljs.core.async/go" :ns cljs.core.async :type :macro}
+             {:candidate "cljs.core.async/go-loop" :ns cljs.core.async :type :macro})
+           (completions "cljs.core.async/go" "cljs.core.async"))))
 
   (testing "Referred macro"
     (is (= '()
            (completions "go-")
-           (completions "go-" "om.core")))
-    (is (= '({:candidate "go-loop" :ns cljs.core.async.macros :type :macro})
+           (completions "go-" "mount.core")))
+    (is (= '({:candidate "go-loop" :ns cljs.core.async :type :macro})
            (completions "go-" "cljs.core.async")))))
 
 (deftest import-completions
@@ -178,20 +176,18 @@
            (completions "IdGen")
            (completions "IdGen" "cljs.core.async")))
     (is (= '({:candidate "IdGenerator" :type :class})
-           (completions "IdGen" "om.core"))))
+           (completions "IdGen" "cljs-tooling.test-ns"))))
 
   (testing "Namespace-qualified import"
     (is (= '()
            (completions "goog.ui.IdGen")
            (completions "goog.ui.IdGen" "cljs.core.async")))
     (is (= '({:candidate "goog.ui.IdGenerator" :type :class})
-           (completions "goog.ui.IdGen" "om.core")))))
+           (completions "goog.ui.IdGen" "cljs-tooling.test-ns")))))
 
 (deftest keyword-completions
   (testing "Keyword"
-    (is (= '({:candidate ":getDisplayName" :type :keyword}
-             {:candidate ":getInitialState" :type :keyword})
-           (completions ":get"))))
+    (is (contains? (set (completions ":re")) '{:candidate ":recur" :type :keyword})))
 
   (testing "Local namespaced keyword"
     (is (= '({:candidate "::some-namespaced-keyword" :ns cljs-tooling.test-ns :type :keyword})
@@ -201,10 +197,11 @@
            (completions "::i" "cljs-tooling.test-ns"))))
 
   (testing "Referred namespaced keyword"
-    (is (= '({:candidate "::om/id" :ns om.core :type :keyword}
-             {:candidate "::om/index" :ns om.core :type :keyword}
-             {:candidate "::om/invalid" :ns om.core :type :keyword})
-           (completions "::om/i" "cljs-tooling.test-ns")))))
+    (is (= '()
+           (completions "::dep/f" "cljs-tooling.test-ns")))
+
+    (is (= '({:candidate "::dep/dep-namespaced-keyword" :ns cljs-tooling.test-ns-dep :type :keyword})
+           (completions "::dep/d" "cljs-tooling.test-ns")))))
 
 (deftest protocol-completions
   (testing "Protocol"

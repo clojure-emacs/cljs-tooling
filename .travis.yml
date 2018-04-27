@@ -1,17 +1,32 @@
 language: clojure
-lein: 2.8.1
-sudo: false
+sudo: required
 cache:
   directories:
     - $HOME/.m2
-script: lein do clean, test
+    - /usr/local
+install:
+  - sudo ./scripts/install-ci-deps /usr/local
+  - clojure -Sdescribe
+  - lumo --version
+script:
+  - ./scripts/test-jvm
+  - ./scripts/test-lumo
 branches:
   only:
     - master
-jdk:
-  - openjdk7
-  - oraclejdk7
-  - oraclejdk8
+# https://stackoverflow.com/questions/50712164/clojure-build-failed-on-travis-ci-with-openjdk-9-during-lein-deps
+matrix:
+  include:
+    - jdk: openjdk8
+    - jdk: oraclejdk8
+    - jdk: openjdk9
+      before_install: &fix_certs
+        - rm "${JAVA_HOME}/lib/security/cacerts"
+        - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
+    - jdk: oraclejdk9
+    - jdk: openjdk10
+      before_install: *fix_certs
+    - jdk: oraclejdk10
 notifications:
   webhooks:
     urls:

@@ -58,7 +58,7 @@
   [env context-ns]
   (for [[refer qualified-name] (a/referred-vars env context-ns)
         :let [ns (namespace qualified-name)
-              type (var->type (a/find-var env qualified-name))]]
+              type (var->type (a/find-symbol-meta env qualified-name))]]
     (candidate-data refer ns type)))
 
 (defn referred-macro-candidates
@@ -89,8 +89,8 @@
 (defn macro-candidates
   [macros]
   (for [[name var] macros
-        :let [var-meta (meta var)
-              ns (ns-name (:ns var-meta))]]
+        :let [var-meta (a/var-meta var)
+              ns (:ns var-meta)]]
     (candidate-data name ns :macro)))
 
 (defn core-macro-candidates
@@ -152,6 +152,7 @@
 
 (defn- prefix-candidate
   [prefix candidate-data]
+  (assert (string? prefix) (str "prefix not a string but " (type prefix)))
   (let [candidate (:candidate candidate-data)
         prefixed-candidate (str prefix "/" candidate)]
     (assoc candidate-data :candidate prefixed-candidate)))
@@ -160,17 +161,21 @@
   [prefix candidates]
   (map #(prefix-candidate prefix %) candidates))
 
-(defn- scope->ns
-  [env scope context-ns]
-  (if (a/find-ns env scope)
-    scope
-    (a/to-ns env scope context-ns)))
+(defn- ->ns
+  [env symbol-ns context-ns]
+  (assert (symbol? symbol-ns) (str "symbol-ns not a symbol but " (type symbol-ns)))
+  (assert (or (nil? context-ns) (symbol? context-ns)) (str "context-ns not a (nilable) symbol but " (type context-ns)))
+  (if (a/find-ns env symbol-ns)
+    symbol-ns
+    (a/ns-alias env symbol-ns context-ns)))
 
-(defn- scope->macro-ns
-  [env scope context-ns]
-  (if (= scope 'cljs.core)
-    scope
-    (a/to-macro-ns env scope context-ns)))
+(defn- ->macro-ns
+  [env symbol-ns context-ns]
+  (assert (symbol? symbol-ns) (str "symbol-ns not a symbol but " (type symbol-ns)))
+  (assert (or (nil? context-ns) (symbol? context-ns)) (str "context-ns not a (nilable) symbol but " (type context-ns)))
+  (if (= symbol-ns 'cljs.core)
+    symbol-ns
+    (a/macro-ns-alias env symbol-ns context-ns)))
 
 (defn ns-public-var-candidates
   "Returns candidate data for all public vars defined in ns."
@@ -180,19 +185,24 @@
 (defn ns-macro-candidates
   "Returns candidate data for all macros defined in ns."
   [env ns]
-  (macro-candidates (a/public-macros ns)))
+  (-> env
+      (a/public-macros #?(:clj ns :cljs (u/add-ns-macros ns)))
+      macro-candidates))
 
 (defn scoped-candidates
   "Returns all candidates for the namespace of sym. Sym must be
   namespace-qualified. Macro candidates are included if the namespace has its
   macros required in context-ns."
   [env sym context-ns]
-  (let [scope (symbol (namespace sym))
-        ns (scope->ns env scope context-ns)
-        macro-ns (scope->macro-ns env scope context-ns)]
-    (mapcat #(prefix-candidates scope %)
-            [(ns-public-var-candidates env ns)
-             (ns-macro-candidates env macro-ns)])))
+  (assert (string? sym) (str "sym must be a string - likely a cljs-tooling bug, please report it - " sym " was a " (type sym)))
+  (let [sym-ns (-> sym u/as-sym u/namespace-sym)
+        computed-ns (->ns env sym-ns context-ns)
+        macro-ns (->macro-ns env sym-ns context-ns)
+        sym-ns-as-string (str sym-ns)]
+    (mapcat #(prefix-candidates sym-ns-as-string %)
+            [(ns-public-var-candidates env computed-ns)
+             (when macro-ns
+               (ns-macro-candidates env macro-ns))])))
 
 (defn potential-candidates
   "Returns all candidates for sym. If sym is namespace-qualified, the candidates
@@ -200,9 +210,10 @@
   macros required in context-ns). Otherwise, all non-namespace-qualified
   candidates for context-ns will be returned."
   [env sym context-ns]
-  (if (and (namespace sym) (not (.startsWith (str sym) ":")))
-    (scoped-candidates env sym context-ns)
-    (unscoped-candidates env context-ns)))
+  (assert (string? sym) (str "sym must be a string - likely a cljs-tooling bug, please report it - " sym " was a " (type sym)))
+  (if (or (= (.indexOf ^String sym "/") -1) (.startsWith ^String sym ":"))
+    (unscoped-candidates env context-ns)
+    (scoped-candidates env sym context-ns)))
 
 (defn- distinct-candidates
   "Filters candidates to have only one entry for each value of :candidate. If
@@ -212,7 +223,8 @@
 
 (defn- candidate-match?
   [candidate prefix]
-  (.startsWith ^String (:candidate candidate) (str prefix)))
+  (assert (string? prefix) (str "prefix must be a string - likely a cljs-tooling bug, please report it - " prefix " was " (type prefix)))
+  (.startsWith ^String (:candidate candidate) prefix))
 
 (defn- enrich-candidate [candidate env {:keys [context-ns extra-metadata]}]
   (if (seq extra-metadata)
@@ -225,6 +237,13 @@
         (assoc :doc (:doc var-meta))))
     candidate))
 
+#?(:cljs
+   (defn- remove-candidate-macros
+     [candidate]
+     (if (= :namespace (:type candidate))
+       (update candidate :candidate (comp str u/remove-macros))
+       candidate)))
+
 (defn completions
   "Returns a sequence of candidate data for completions matching the given
   prefix string and options. If the third parameter is a string it's used
@@ -234,11 +253,17 @@
   - :extra-metadata - set of additional fields (:arglists, :doc) to add to the response maps."
   ([env prefix] (completions env prefix nil))
   ([env prefix options-map]
-   (let [prefix (u/as-sym prefix)
-         {:keys [context-ns] :as options-map} (if (string? options-map) {:context-ns options-map} options-map)
+   (let [{:keys [context-ns] :as options-map} (if (string? options-map) {:context-ns options-map} options-map)
          context-ns (u/as-sym context-ns)]
      (->> (potential-candidates env prefix context-ns)
+          #?(:cljs (map remove-candidate-macros))
           distinct-candidates
           (filter #(candidate-match? % prefix))
           (map #(enrich-candidate % env options-map))
           (sort-by :candidate)))))
+
+(comment
+  (require '[cljs-tooling.test-env :as tenv])
+  (def env (tenv/create-test-env))
+  (completions env "cljs.core.async.impl.ioc-macros" "cljs.core.async")
+  )

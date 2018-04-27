@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+set -eu
+
+port=${@:-5044}
+
+cp=$(lein with-profile self-host classpath)
+
+lumo -sfK -c "$cp" -n $port
