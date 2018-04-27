@@ -1,9 +1,10 @@
 language: clojure
+lein: 2.8.1
 sudo: false
 cache:
   directories:
     - $HOME/.m2
-script: lein2 do clean, test
+script: lein do clean, test
 branches:
   only:
     - master
