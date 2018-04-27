@@ -1,4 +1,5 @@
-(ns cljs-tooling.util.misc)
+(ns cljs-tooling.util.misc
+  (:require [clojure.string :as str]))
 
 ;; from http://www.learningclojure.com/2010/09/clojure-macro-tutorial-part-i-getting.html
 (defmacro dbg [x] `(let [x# ~x] (println '~x "=" x#) x#))
@@ -24,3 +25,43 @@
 (defn as-sym [x]
   (if x (symbol x)))
 
+
+(defn namespace-sym
+  "Return the namespace of a fully qualified symbol if possible.
+
+  It leaves the symbol untouched if not."
+  [sym]
+  (if-let [ns (and sym (namespace sym))]
+    (as-sym ns)
+    sym))
+
+(defn name-sym
+  "Return the name of a fully qualified symbol if possible.
+
+  It leaves the symbol untouched if not."
+  [sym]
+  (if-let [n (and sym (name sym))]
+    (as-sym n)
+    sym))
+
+(defn add-ns-macros
+  "Append $macros to the input symbol"
+  [sym]
+  (some-> sym
+          (str "$macros")
+          symbol))
+
+(defn remove-macros
+  "Remove $macros from the input symbol"
+  [sym]
+  (some-> sym
+          str
+          (str/replace #"\$macros" "")
+          symbol))
+
+(defn ns-obj?
+  "Return true if n is a namespace object"
+  [ns]
+  (instance? #?(:clj clojure.lang.Namespace
+                :cljs cljs.core/Namespace)
+             ns))

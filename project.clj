@@ -4,7 +4,17 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies []
-  :profiles {:dev {:dependencies [[org.clojure/clojure "1.7.0"]
-                                  [org.clojure/clojurescript "1.7.189"]
-                                  [org.clojure/core.async "0.2.374"]
-                                  [org.omcljs/om "1.0.0-alpha28"]]}})
+  :global-vars {*assert* false}
+  :profiles {:dev {:dependencies [[org.clojure/clojure "1.9.0" :scope "test"]
+                                  [org.clojure/clojurescript "1.10.238" :scope "test"]
+                                  [org.clojure/core.async "0.4.474" :scope "test"]
+                                  ;; mount is self-host compatible so better for testing
+                                  [mount "0.1.13" :scope "test"]]
+                   :resource-paths ["test-resources"]
+                   :global-vars {*assert* true}}
+             :self-host {:resource-paths ["src" "test" "test-resources"]
+                         :exclusions [org.clojure/clojure org.clojure/clojurescript]
+                         :dependencies [[andare "0.9.0" :scope "test"]
+                                        ;; mount is self-host compatible so better for testing
+                                        [mount "0.1.13" :scope "test"]]
+                         :global-vars {*assert* true}}})

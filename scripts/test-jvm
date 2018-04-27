@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+set -eu
+
+lein with-profile dev test

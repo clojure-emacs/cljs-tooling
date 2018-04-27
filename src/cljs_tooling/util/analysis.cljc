@@ -19,14 +19,6 @@
   [env ns]
   (get (all-ns env) (u/as-sym ns)))
 
-(defn find-var
-  "Given a namespace-qualified var name, gets the analyzer metadata for that
-  var."
-  [env sym]
-  (let [sym (u/as-sym sym)
-        ns (find-ns env (namespace sym))]
-    (get (:defs ns) (-> sym name symbol))))
-
 ;; Code adapted from clojure-complete (http://github.com/ninjudd/clojure-complete)
 
 (defn imports
@@ -69,13 +61,13 @@
        :use-macros
        expand-refer-map))
 
-(defn to-ns
+(defn ns-alias
   "If sym is an alias to, or the name of, a namespace referred to in ns, returns
   the name of the namespace; else returns nil."
   [env sym ns]
   (get (ns-aliases env ns) (u/as-sym sym)))
 
-(defn to-macro-ns
+(defn macro-ns-alias
   "If sym is an alias to, or the name of, a macro namespace referred to in ns,
   returns the name of the macro namespace; else returns nil."
   [env sym ns]
@@ -115,12 +107,21 @@
        (into {})))
 
 (defn public-macros
-  "Returns a list of the public macros declared in the ns."
-  [ns]
-  (when (and ns (clojure.core/find-ns ns))
-    (->> (ns-publics ns)
-         (filter macro?)
-         (into {}))))
+  "Given a namespace return all the public var analysis maps. Analagous to
+  clojure.core/ns-publics but returns var analysis maps not vars.
+
+  Inspired by the ns-publics in cljs.analyzer.api."
+  [env ns]
+  {:pre [(symbol? ns)]}
+  #?(:clj (when (and ns (clojure.core/find-ns ns))
+            (->> (ns-publics ns)
+                 (filter macro?)
+                 (into {})))
+     :cljs (->> (merge
+                 (get-in env [NSES ns :macros])
+                 (get-in env [NSES ns :defs]))
+                (remove (fn [[k v]] (:private v)))
+                (into {}))))
 
 (defn core-vars
   "Returns a list of cljs.core vars visible to the ns."
@@ -132,7 +133,7 @@
 (defn core-macros
   "Returns a list of cljs.core macros visible to the ns."
   [env ns]
-  (let [macros (public-macros 'cljs.core)
+  (let [macros (public-macros env #?(:clj 'cljs.core :cljs 'cljs.core$macros))
         excludes (:excludes (find-ns env ns))]
     (apply dissoc macros excludes)))
 
@@ -140,3 +141,58 @@
   "Returns a list of keyword constants in the environment."
   [env]
   (filter keyword? (keys (:cljs.analyzer/constant-table env))))
+
+;; grabbing directly from cljs.analyzer.api
+
+(defn ns-interns-from-env
+  "Given a namespace return all the var analysis maps. Analagous to
+  clojure.core/ns-interns but returns var analysis maps not vars.
+
+  Directly from cljs.analyzer.api."
+  [env ns]
+  {:pre [(symbol? ns)]}
+  (merge
+   (get-in env [NSES ns :macros])
+   (get-in env [NSES ns :defs])))
+
+(defn sanitize-ns
+  "Add :ns from :name if missing."
+  [m]
+  (-> m
+      (assoc :ns (or (:ns m) (:name m)))
+      (update :ns u/namespace-sym)
+      (update :name u/name-sym)))
+
+(defn var-meta
+  "Return meta for the var, we wrap it in order to support both JVM and
+  self-host."
+  [var]
+  (cond-> {}
+    (map? var) (merge var)
+    (var? var) (-> (merge (meta var))
+                   (update :ns #(cond-> % (u/ns-obj? %) ns-name)))
+    true sanitize-ns
+    #?@(:cljs [true (-> (update :ns u/remove-macros)
+                        (update :name u/remove-macros))])))
+
+(defn ns-meta
+  "Return meta for the var, we wrap it in order to support both JVM and
+  self-host."
+  [var]
+  (cond-> {}
+    (map? var) (merge var)
+    (u/ns-obj? var) (merge {:ns (ns-name var)
+                            :name (ns-name var)})
+    true sanitize-ns
+    #?@(:cljs [true (-> (update :ns u/remove-macros)
+                        (update :name u/remove-macros))])))
+
+(defn find-symbol-meta
+  "Given a namespace-qualified var name, gets the analyzer metadata for that
+  var."
+  [env sym]
+  (let [sym (u/as-sym sym)
+        ns (find-ns env (u/namespace-sym sym))]
+    (some-> (:defs ns)
+            (get (u/name-sym sym))
+            var-meta)))
