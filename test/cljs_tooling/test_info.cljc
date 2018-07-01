@@ -42,6 +42,15 @@
                :line 13}))
       (is (.endsWith (:file res) "cljs/core/async/impl/dispatch.cljs"))))
 
+  (testing "Special forms"
+    (let [res (info 'def)]
+      (is (= res
+             '{:ns cljs.core,
+               :name def,
+               :doc
+               "Creates and interns a global var with the name\n  of symbol in the current namespace (*ns*) or locates such a var if\n  it already exists.  If init is supplied, it is evaluated, and the\n  root binding of the var is set to the resulting value.  If init is\n  not supplied, the root binding of the var is unaffected.",
+               :arglists nil}))))
+
   (testing "Fully-qualified var"
     (let [res (info 'clojure.string/trim 'cljs-tooling.test-ns)]
       (is (= (select-keys res [:ns :name :arglists :doc])
