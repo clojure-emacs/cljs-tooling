@@ -106,6 +106,10 @@
   (let [sym (u/as-sym sym)
         context-ns (u/as-sym context-ns)]
     (u/cond-let
+
+     ;; a special symbol
+     [special-meta (a/special-meta env sym)] (format-var-meta context-ns special-meta)
+
      ;; an NS
      [ns (a/find-ns env sym)] (format-ns-meta ns)
 

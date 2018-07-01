@@ -1,5 +1,6 @@
 (ns cljs-tooling.util.analysis
-  (:require [cljs-tooling.util.misc :as u])
+  (:require [cljs-tooling.util.misc :as u]
+            [cljs-tooling.util.special :as special])
   (:refer-clojure :exclude [find-ns find-var all-ns ns-aliases]))
 
 (def NSES :cljs.analyzer/namespaces)
@@ -216,3 +217,12 @@
     (some-> (:defs ns)
             (get (u/name-sym sym))
             var-meta)))
+
+(defn special-meta
+  "Given a special symbol, gets the analyzer metadata."
+  [_ sym]
+  (when-let [meta (or (get special/doc-map sym)
+                      (get special/repl-doc-map sym))]
+    (merge {:name sym
+            :ns 'cljs.core}
+           meta)))

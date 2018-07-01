@@ -53,7 +53,11 @@
 (deftest special-form-completions
   (testing "Special form"
     (is (= '({:candidate "throw" :ns cljs.core :type :special-form})
-           (completions "thr")))))
+           (completions "thr")))
+
+    (is (empty? (set/difference (set '({:candidate "def" :ns cljs.core :type :special-form}
+                                       {:candidate "do" :ns cljs.core :type :special-form}))
+                                (set (completions "d")))))))
 
 (deftest namespace-completions
   (testing "Namespace"
@@ -190,7 +194,7 @@
     (is (empty? (set/difference (set '({:candidate ":require" :type :keyword}
                                        {:candidate ":require-macros" :type :keyword}
                                        {:candidate ":recur" :type :keyword}))
-                                (set (completions ":re"))))))
+                                (set (completions ":re")))) "the completion should include recur - coming from both special and normal info metadata."))
 
   (testing "Local namespaced keyword"
     (is (= '({:candidate "::some-namespaced-keyword" :ns cljs-tooling.test-ns :type :keyword})
