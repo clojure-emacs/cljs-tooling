@@ -187,7 +187,10 @@
 
 (deftest keyword-completions
   (testing "Keyword"
-    (is (contains? (set (completions ":re")) '{:candidate ":recur" :type :keyword})))
+    (is (empty? (set/difference (set '({:candidate ":require" :type :keyword}
+                                       {:candidate ":require-macros" :type :keyword}
+                                       {:candidate ":recur" :type :keyword}))
+                                (set (completions ":re"))))))
 
   (testing "Local namespaced keyword"
     (is (= '({:candidate "::some-namespaced-keyword" :ns cljs-tooling.test-ns :type :keyword})

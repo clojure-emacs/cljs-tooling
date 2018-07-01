@@ -137,10 +137,30 @@
         excludes (:excludes (find-ns env ns))]
     (apply dissoc macros excludes)))
 
+(def ^:private language-keywords
+  #{:require :require-macros :import
+    :refer :refer-macros :include-macros
+    :refer-clojure :exclude
+    :keys :strs :syms
+    :as :or
+    :pre :post
+    :let :when :while
+    :clj :cljs
+    :default
+    :else
+    :private :doc :author
+    :gen-class
+    :keywordize-keys
+    :req :req-un :opt :opt-un
+    :args :ret :fn
+    :const
+    :arglists :tag :static :added})
+
 (defn keyword-constants
-  "Returns a list of keyword constants in the environment."
+  "Returns a list of both keyword constants in the environment and
+  language specific ones."
   [env]
-  (filter keyword? (keys (:cljs.analyzer/constant-table env))))
+  (concat language-keywords (filter keyword? (keys (:cljs.analyzer/constant-table env)))))
 
 ;; grabbing directly from cljs.analyzer.api
 
