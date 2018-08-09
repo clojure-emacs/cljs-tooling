@@ -7,9 +7,7 @@
                       [cljs.build.api :as build]
                       [cljs.compiler.api :as comp]
                       [clojure.java.io :as io]]
-                :cljs [[lumo.repl :as repl]
-                       [lumo.build.api :as build]
-                       [lumo.io :as io]])))
+                :cljs [[lumo.repl :as repl]])))
 
 (defn create-test-env []
   #?(:clj
