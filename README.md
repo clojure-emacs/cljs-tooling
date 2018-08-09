@@ -41,11 +41,29 @@ cljs-tooling.complete> (completions @cljs.env/*compiler* "al" 'cljs.core)
 => ("alength" "alter-meta!")
 ```
 
+### Self-host ClojureScript
+
+This library is compatible with self-host ClojureScript. In order to try it out in `lumo`, for instance, just do:
+
+```shell
+lumo -c $(clojure -Sdeps '{:deps {cljs-tooling {:mvn/version "X.Y.Z"}}}' -Spath)
+```
+
+```clojure
+cljs.user=> (require '[cljs-tooling.complete :as ctc])
+nil
+cljs.user=> (ctc/completions @cljs.env/*compiler* "al" 'cljs.core)
+cljs.user=> (ctc/completions @cljs.env/*compiler* "al" 'cljs.core)
+=> ({:candidate "alength", :type :function, :ns cljs.core}
+    {:candidate "alter-meta!", :type :function, :ns cljs.core})
+```
+
 ## Contributors
 
 * [Gary Trakhman](http://github.com/gtrak)
 * [Michael Griffiths](http://github.com/cichli)
 * [Juho Teperi](http://github.com/Deraen)
+* [Andrea Richiardi](http://github.com/arichiardi)
 
 ## License
 
