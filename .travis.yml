@@ -6,7 +6,6 @@ cache:
     - /usr/local
 install:
   - sudo ./scripts/install-ci-deps /usr/local
-  - clojure -Sdescribe
   - lumo --version
 script:
   - ./scripts/test-jvm
