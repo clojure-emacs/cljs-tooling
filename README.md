@@ -49,6 +49,6 @@ cljs-tooling.complete> (completions @cljs.env/*compiler* "al" 'cljs.core)
 
 ## License
 
-Copyright © 2014-2015 Gary Trakhman
+Copyright © 2014-2018 Gary Trakhman & contributors
 
 Distributed under the Eclipse Public License, the same as Clojure.
