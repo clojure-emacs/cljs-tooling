@@ -3,6 +3,7 @@
   :url "https://github.com/clojure-emacs/cljs-tooling"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :scm {:name "git" :url "https://github.com/clojure-emacs/cljs-tooling"}
   :dependencies []
   :global-vars {*assert* false}
   :profiles {:dev {:dependencies [[org.clojure/clojure "1.9.0" :scope "test"]
