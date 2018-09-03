@@ -6,6 +6,12 @@
   :scm {:name "git" :url "https://github.com/clojure-emacs/cljs-tooling"}
   :dependencies []
   :global-vars {*assert* false}
+
+  :deploy-repositories [["clojars" {:url "https://clojars.org/repo"
+                                    :username :env/clojars_username
+                                    :password :env/clojars_password
+                                    :sign-releases false}]]
+
   :profiles {:dev {:dependencies [[org.clojure/clojure "1.9.0" :scope "test"]
                                   [org.clojure/clojurescript "1.10.238" :scope "test"]
                                   [org.clojure/core.async "0.4.474" :scope "test"]
