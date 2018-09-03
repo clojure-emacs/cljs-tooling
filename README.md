@@ -5,8 +5,9 @@
 
 # cljs-tooling
 
-A Clojure library designed to provide tooling support for ClojureScript.
-Currently it provides var info and auto-completion based on compiler state.
+A Clojure library designed to provide tooling support for
+ClojureScript.  Currently it provides var info and auto-completion
+based on the ClojureScript compiler state.
 
 It is the basis for ClojureScript features in
 [cider-nrepl](https://github.com/clojure-emacs/cider-nrepl) (and in
@@ -16,7 +17,7 @@ development.
 
 ## Artifacts
 
-With leiningen:
+With Leiningen:
 
      [cljs-tooling "0.3.0"]
 
@@ -45,7 +46,9 @@ cljs-tooling.complete> (completions @cljs.env/*compiler* "al" 'cljs.core)
 
 ### Self-host ClojureScript
 
-This library is compatible with self-host ClojureScript. In order to try it out in `lumo`, for instance, just do:
+Starting with version 0.3 this library is compatible with self-host
+ClojureScript. In order to try it out in `lumo`, for instance, just
+do:
 
 ```shell
 lumo -c $(clojure -Sdeps '{:deps {cljs-tooling {:mvn/version "X.Y.Z"}}}' -Spath)
