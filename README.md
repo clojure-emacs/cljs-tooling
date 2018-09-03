@@ -1,5 +1,7 @@
 [![Continuous Integration status](https://travis-ci.org/clojure-emacs/cljs-tooling.svg)](http://travis-ci.org/clojure-emacs/cljs-tooling)
 [![Dependencies Status](https://versions.deps.co/clojure-emacs/cljs-tooling/status.svg)](https://versions.deps.co/clojure-emacs/cljs-tooling)
+[![Clojars Project](https://img.shields.io/clojars/v/cljs-tooling.svg)](https://clojars.org/cljs-tooling)
+[![cljdoc badge](https://cljdoc.xyz/badge/cljs-tooling/cljs-tooling)](https://cljdoc.xyz/d/cljs-tooling/cljs-tooling/CURRENT)
 
 # cljs-tooling
 
