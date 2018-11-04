@@ -9,3 +9,7 @@
 (defrecord TestRecord [a b c])
 
 (def x ::some-namespaced-keyword)
+
+(defn issue-28
+  []
+  (println "https://github.com/clojure-emacs/cljs-tooling/issues/28"))

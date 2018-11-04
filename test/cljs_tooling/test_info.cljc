@@ -24,6 +24,16 @@
       (is (= (:name plus) (-> #'+ meta :name)))
       (is (= (:ns plus) 'cljs.core))))
 
+  (testing "Resolution from current namespace - issue #28"
+    (let [res (info 'issue-28 'cljs-tooling.test-ns)]
+      (is (= (select-keys res [:arglists :line :column :ns :name])
+             '{:arglists ([])
+               :line 13
+               :column 1
+               :ns cljs-tooling.test-ns
+               :name issue-28}))
+      (is (.endsWith (:file res) "cljs_tooling/test_ns.cljs"))))
+
   (testing "Resolution from other namespaces"
     (let [plus (info '+ 'cljs.core.async)]
       (is (= (:name plus) (-> #'+ meta :name)))
