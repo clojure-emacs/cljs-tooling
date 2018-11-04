@@ -25,7 +25,8 @@ matrix:
     - jdk: oraclejdk9
     - jdk: openjdk10
       before_install: *fix_certs
-    - jdk: oraclejdk10
+  # oraclejdk10 is deprecated. See https://www.oracle.com/technetwork/java/javase/eol-135779.html for more details. Consider using openjdk10 instead.
+  # - jdk: oraclejdk10
 notifications:
   webhooks:
     urls:
