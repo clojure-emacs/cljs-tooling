@@ -52,8 +52,8 @@
   [env sym & [context-ns]]
   (or (a/find-symbol-meta env sym)
       (let [scope (u/namespace-sym sym)
-            ns (a/ns-alias env scope context-ns)
-            sym (symbol (str ns "/" (u/name-sym sym)))]
+            aliased-ns (a/ns-alias env scope context-ns)
+            sym (symbol (str (or aliased-ns context-ns) "/" (u/name-sym sym)))]
         (a/find-symbol-meta env sym))))
 
 (defn macro-namespace
@@ -141,10 +141,7 @@
      [var (get (a/core-vars env context-ns) sym)] (format-var-meta context-ns (a/var-meta var))
 
      ;; macro in cljs.core
-     [macro-meta (scoped-macro-meta env sym 'cljs.core)] (format-macro-meta env macro-meta)
-
-     ;; var in ns
-     [var-meta (scoped-var-meta env sym context-ns)] (format-var-meta context-ns var-meta))))
+     [macro-meta (scoped-macro-meta env sym 'cljs.core)] (format-macro-meta env macro-meta))))
 
 (comment
   (require '[cljs-tooling.test-env :as tenv])
