@@ -19,7 +19,7 @@ development.
 
 With Leiningen:
 
-     [cljs-tooling "0.3.0"]
+     [cljs-tooling "0.3.1"]
 
 ## Usage
 
