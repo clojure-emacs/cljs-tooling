@@ -40,6 +40,42 @@
       (is (= (:ns plus) 'cljs.core))))
 
   (testing "Namespace itself"
+    (let [res (info 'cljs-tooling.test-ns)]
+      (is (= (select-keys res [:line :doc :name :ns])
+             '{:ns cljs-tooling.test-ns
+               :name cljs-tooling.test-ns
+               :doc nil
+               :line 1}))
+      (is (.endsWith (:file res) "cljs_tooling/test_ns.cljs"))))
+
+  (testing "Namespace itself with context - this is how the info middleware sends it"
+    (let [res (info 'cljs-tooling.test-ns 'cljs-tooling.test-ns)]
+      (is (= (select-keys res [:line :doc :name :ns])
+             '{:ns cljs-tooling.test-ns
+               :name cljs-tooling.test-ns
+               :doc nil
+               :line 1}))
+      (is (.endsWith (:file res) "cljs_tooling/test_ns.cljs"))))
+
+  (testing "Namespace dependency"
+    (let [res (info 'cljs-tooling.test-ns-dep)]
+      (is (= (select-keys res [:line :doc :name :ns])
+             '{:ns cljs-tooling.test-ns-dep
+               :name cljs-tooling.test-ns-dep
+               :doc nil
+               :line 1}))
+      (is (.endsWith (:file res) "cljs_tooling/test_ns_dep.cljs"))))
+
+  (testing "Namespace dependency with context - this is how the info middleware sends it"
+    (let [res (info 'cljs-tooling.test-ns-dep 'cljs-tooling.test-ns)]
+      (is (= (select-keys res [:line :doc :name :ns])
+             '{:ns cljs-tooling.test-ns-dep
+               :name cljs-tooling.test-ns-dep
+               :doc nil
+               :line 1}))
+      (is (.endsWith (:file res) "cljs_tooling/test_ns_dep.cljs"))))
+
+  (testing "Namespace itself but cljs.core"
     (is (= (-> (info 'cljs.core) keys sort)
            (sort '(:ns :name :line :file :doc)))))
 
