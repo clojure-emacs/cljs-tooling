@@ -13,7 +13,7 @@
                                     :sign-releases false}]]
 
   :profiles {:dev {:dependencies [[org.clojure/clojure "1.9.0" :scope "test"]
-                                  [org.clojure/clojurescript "1.10.238" :scope "test"]
+                                  [org.clojure/clojurescript "1.10.439" :scope "test"]
                                   [org.clojure/core.async "0.4.474" :scope "test"]
                                   ;; mount is self-host compatible so better for testing
                                   [mount "0.1.13" :scope "test"]]
