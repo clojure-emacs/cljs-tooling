@@ -11,20 +11,14 @@ install:
 script:
   - ./scripts/test-jvm
   - ./scripts/test-lumo
-# https://stackoverflow.com/questions/50712164/clojure-build-failed-on-travis-ci-with-openjdk-9-during-lein-deps
+jdk:
+  - openjdk8
+  - openjdk11
+  - openjdk-ea
 matrix:
-  include:
-    - jdk: openjdk8
-    - jdk: oraclejdk8
-    - jdk: openjdk9
-      before_install: &fix_certs
-        - rm "${JAVA_HOME}/lib/security/cacerts"
-        - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
-    - jdk: oraclejdk9
-    - jdk: openjdk10
-      before_install: *fix_certs
-  # oraclejdk10 is deprecated. See https://www.oracle.com/technetwork/java/javase/eol-135779.html for more details. Consider using openjdk10 instead.
-  # - jdk: oraclejdk10
+  fast_finish: true
+  allow_failures:
+    - jdk: openjdk-ea
 notifications:
   webhooks:
     urls:
