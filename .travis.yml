@@ -4,18 +4,25 @@ lein: 2.8.3
 cache:
   directories:
     - $HOME/.m2
-    - /usr/local
-install:
-  - sudo ./scripts/install-ci-deps /usr/local
-  - lumo --version
 script:
-  - ./scripts/test-jvm
-  - ./scripts/test-lumo
+  - make $TARGET
+env:
+  matrix:
+    - CLOJURE_VERSION=1.8 TARGET='test-jvm'
+    - CLOJURE_VERSION=1.9 TARGET='test-jvm'
+    - CLOJURE_VERSION=1.10 TARGET='test-jvm'
+    - CLOJURE_VERSION=master TARGET='test-jvm'
 jdk:
   - openjdk8
   - openjdk11
   - openjdk-ea
+jobs:
+  include:
+    - stage: test
+      jdk: openjdk11
+      env: TARGET='test-lumo'
 matrix:
   fast_finish: true
   allow_failures:
     - jdk: openjdk-ea
+    - env: CLOJURE_VERSION=master TARGET='test-jvm'
