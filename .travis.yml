@@ -11,9 +11,6 @@ install:
 script:
   - ./scripts/test-jvm
   - ./scripts/test-lumo
-branches:
-  only:
-    - master
 # https://stackoverflow.com/questions/50712164/clojure-build-failed-on-travis-ci-with-openjdk-9-during-lein-deps
 matrix:
   include:
