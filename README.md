@@ -5,6 +5,8 @@
 
 # cljs-tooling
 
+**DEPRECATION NOTICE:** This project's functionality is now part of `orchard` (var info) and `clj-suitable` (code completion).
+
 A Clojure library designed to provide tooling support for
 ClojureScript.  Currently it provides var info and auto-completion
 based on the ClojureScript compiler state.
